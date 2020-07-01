@@ -1,0 +1,26 @@
+##开发配置
+#spring:
+#  profiles: dev
+#
+#  datasource:
+#    url: jdbc:mysql://localhost:3306/incomes?useSSL=false&serverTimezone=GMT%2B8&allowPublicKeyRetrieval=true
+#    username: root
+#    password: 970912
+#    driver-class-name: com.mysql.jdbc.Driver
+#
+#  jpa:
+#    properties:
+#      hibernate:
+#        hbm2ddl:
+#          auto: create
+#        dialect: org.hibernate.dialect.MySQL5InnoDBDialect
+#        format_sql: true
+#    show-sql: true
+#
+#  mvc:
+#    view:
+#      prefix: /WEB-INF/jsp/
+#      suffix: .jsp
+#    # 使用druid数据源
+##    type: com.alibaba.druid.pool.DruidDataSource
+
