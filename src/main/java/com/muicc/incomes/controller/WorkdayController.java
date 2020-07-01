@@ -161,7 +161,7 @@ public class WorkdayController {
         }
      }
 
-    //按员工姓名和时间删除出勤记录
+    //按ID删除出勤记录
     @CrossOrigin
     @DeleteMapping("incomes/deleteWorkday")
     @ResponseBody
