@@ -1,4 +1,4 @@
-package com.muicc.incomes.pojo;
+package com.muicc.incomes.model;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -7,14 +7,15 @@ import java.util.Objects;
 
 @Entity
 @Table(name = "userdefault1")
-public class Userdefault1 implements Serializable {
+public class RequestUserdefault1 implements Serializable {
     private Integer id;
     private int eid;
+    private String ename;
     private double allowanceids;
     private double cutids;
     private double regularpay;
     private double insurancebase;
-    private Date updatedate;
+    private String updatedate;
     private int status;
     private String note;
     private String qianzhang;
@@ -81,13 +82,11 @@ public class Userdefault1 implements Serializable {
         this.insurancebase = insurancebase;
     }
 
-    @Basic
-    @Column(name = "updatedate")
-    public Date getUpdatedate() {
+    public String getUpdatedate() {
         return updatedate;
     }
 
-    public void setUpdatedate(Date updatedate) {
+    public void setUpdatedate(String updatedate) {
         this.updatedate = updatedate;
     }
 
@@ -121,11 +120,20 @@ public class Userdefault1 implements Serializable {
         this.qianzhang = qianzhang;
     }
 
+
+    public String getEname() {
+        return ename;
+    }
+
+    public void setEname(String ename) {
+        this.ename = ename;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        Userdefault1 that = (Userdefault1) o;
+        RequestUserdefault1 that = (RequestUserdefault1) o;
         return id == that.id &&
                 eid == that.eid &&
                 Double.compare(that.regularpay, regularpay) == 0 &&

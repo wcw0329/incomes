@@ -60,6 +60,21 @@ public class EmployerController {
         return list;
     }
 
+    //根据员工ID查找员工信息
+    @CrossOrigin
+    @GetMapping(value = "incomes/getEmployerById")
+    @ResponseBody
+    public List getEmployerById(int id) {
+
+        Employer employer = employerDao.getEmployerById(id);
+        List list = new ArrayList<>();
+            Map map = new HashMap();
+            map.put("name", employer.getName());//姓名
+            list.add(map);
+
+        return list;
+    }
+
     //添加员工信息
     @CrossOrigin
     @PostMapping("incomes/addEmployer")
