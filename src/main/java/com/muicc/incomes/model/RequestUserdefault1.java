@@ -11,8 +11,6 @@ public class RequestUserdefault1 implements Serializable {
     private Integer id;
     private int eid;
     private String ename;
-    private double allowanceids;
-    private double cutids;
     private double regularpay;
     private double insurancebase;
     private String updatedate;
@@ -40,26 +38,6 @@ public class RequestUserdefault1 implements Serializable {
 
     public void setEid(int eid) {
         this.eid = eid;
-    }
-
-    @Basic
-    @Column(name = "allowanceids")
-    public Double getAllowanceids() {
-        return allowanceids;
-    }
-
-    public void setAllowanceids(Double allowanceids) {
-        this.allowanceids = allowanceids;
-    }
-
-    @Basic
-    @Column(name = "cutids")
-    public Double getCutids() {
-        return cutids;
-    }
-
-    public void setCutids(Double cutids) {
-        this.cutids = cutids;
     }
 
     @Basic
@@ -139,8 +117,6 @@ public class RequestUserdefault1 implements Serializable {
                 Double.compare(that.regularpay, regularpay) == 0 &&
                 Double.compare(that.insurancebase, insurancebase) == 0 &&
                 status == that.status &&
-                Objects.equals(allowanceids, that.allowanceids) &&
-                Objects.equals(cutids, that.cutids) &&
                 Objects.equals(updatedate, that.updatedate) &&
                 Objects.equals(note, that.note) &&
                 Objects.equals(qianzhang, that.qianzhang);
@@ -148,6 +124,6 @@ public class RequestUserdefault1 implements Serializable {
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, eid, allowanceids, cutids, regularpay, insurancebase, updatedate, status, note, qianzhang);
+        return Objects.hash(id, eid, regularpay, insurancebase, updatedate, status, note, qianzhang);
     }
 }

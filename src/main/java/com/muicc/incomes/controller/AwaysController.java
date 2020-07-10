@@ -4,9 +4,9 @@ package com.muicc.incomes.controller;
 import com.muicc.incomes.dao.AwaysDao;
 import com.muicc.incomes.dao.CreatedateDao;
 import com.muicc.incomes.dao.EmployerDao;
-import com.muicc.incomes.dao.WorkdayDao;
 import com.muicc.incomes.pojo.Aways;
-import com.muicc.incomes.pojo.Workday;
+import com.muicc.incomes.pojo.Createdate;
+import com.muicc.incomes.pojo.Employer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -24,8 +24,6 @@ public class AwaysController {
     @Autowired
     AwaysDao awaysDao;
     @Autowired
-    WorkdayDao workdayDao;
-    @Autowired
     EmployerDao employerDao;
     @Autowired
     CreatedateDao createdateDao;
@@ -42,22 +40,18 @@ public class AwaysController {
             Aways aways = awaysList.get(i);
             map.put("num", i+1);//序号
             map.put("cutmoney",aways.getCutmoney());//旷工扣款金额
-            int workdayId = aways.getWorkdayid();
-            Workday workday = workdayDao.getWorkdayById(workdayId);
-            if(workday!=null){
-                map.put("ename",employerDao.getEmployerById(workday.getEid()).getName());//员工姓名
-                map.put("time", createdateDao.getCreatedateByCdid(workday.getCdid()).getName());//时间
-                String status = null;
-                if(aways.getShown()==1){
-                    status = "已提交";
-                }else{
-                    status = "未提交";
-                }
-                map.put("status", status);//状态
-                list.add(map);
+            Employer employerById = employerDao.getEmployerById(aways.getEid());
+            map.put("ename",employerById.getName());//员工姓名
+            Createdate createdateByCdid = createdateDao.getCreatedateByCdid(aways.getCdid());
+            map.put("time", createdateByCdid.getName());//扣款时间
+            String status = null;
+            if(aways.getStatus()==0){
+                status = "已提交";
             }else{
-                continue;
+                status = "未提交";
             }
+            map.put("status", status);//状态
+            list.add(map);
         }
         return list;
     }

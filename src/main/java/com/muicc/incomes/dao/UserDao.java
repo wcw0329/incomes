@@ -22,4 +22,5 @@ public interface UserDao extends JpaRepository<User,Integer> {
     @Modifying
     @Query(value = "delete from user where userobjectid = ?1",nativeQuery = true)
     int deleteUser(int userobjectId);
+
 }

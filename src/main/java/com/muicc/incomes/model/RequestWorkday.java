@@ -14,6 +14,8 @@ public class RequestWorkday {
 
     private int cdid;
 
+    private int paidLeave;
+
     private int absence;
 
     private double overtimen;
@@ -27,6 +29,10 @@ public class RequestWorkday {
     private double late;
 
     private double leaveral;
+
+    private int lateTimes;
+
+    private int leaveralTimes;
 
     public String getName() {
         return name;
@@ -122,5 +128,29 @@ public class RequestWorkday {
 
     public void setLeaveral(double leaveral) {
         this.leaveral = leaveral;
+    }
+
+    public int getPaidLeave() {
+        return paidLeave;
+    }
+
+    public void setPaidLeave(int paidLeave) {
+        this.paidLeave = paidLeave;
+    }
+
+    public int getLateTimes() {
+        return lateTimes;
+    }
+
+    public void setLateTimes(int lateTimes) {
+        this.lateTimes = lateTimes;
+    }
+
+    public int getLeaveralTimes() {
+        return leaveralTimes;
+    }
+
+    public void setLeaveralTimes(int leaveralTimes) {
+        this.leaveralTimes = leaveralTimes;
     }
 }

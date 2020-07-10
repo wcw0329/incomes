@@ -44,7 +44,8 @@ public class WorkdayController {
             map.put("cdid", workday.getCdid());
             map.put("time", createdateDao.getCreatedateByCdid(workday.getCdid()).getName());//时间
             map.put("name", employerDao.getEmployerById(workday.getEid()).getName());//员工姓名
-            map.put("absence", workday.getAbsence());//请假
+            map.put("absence", workday.getAbsence());//无薪请假
+            map.put("paidLeave", workday.getPaidLeave());//带薪请假
             map.put("overtimen", workday.getOvertimen());//普通加班
             map.put("overtimed", workday.getOvertimed());//假日加班
             String status = null;
@@ -57,7 +58,9 @@ public class WorkdayController {
 
             map.put("absenteeism", workday.getAbsenteeism());//旷工
             map.put("late", workday.getLate());//迟到
+            map.put("lateTimes", workday.getLateTimes());//迟到次数
             map.put("leaveral", workday.getLeaveral());//早退
+            map.put("leaveralTimes", workday.getLeaveralTimes());//早退次数
             list.add(map);
         }
         return list;
@@ -79,7 +82,8 @@ public class WorkdayController {
             map.put("cdid", workday.getCdid());
             map.put("time", createdateDao.getCreatedateByCdid(workday.getCdid()).getName());//时间
             map.put("name", employerDao.getEmployerById(workday.getEid()).getName());//员工姓名
-            map.put("absence", workday.getAbsence());//请假
+            map.put("absence", workday.getAbsence());//无薪请假
+            map.put("paidLeave", workday.getPaidLeave());//带薪请假
             map.put("overtimen", workday.getOvertimen());//普通加班
             map.put("overtimed", workday.getOvertimed());//假日加班
             String status = null;
@@ -91,7 +95,9 @@ public class WorkdayController {
             map.put("status", status);//状态
             map.put("absenteeism", workday.getAbsenteeism());//旷工
             map.put("late", workday.getLate());//迟到
+            map.put("lateTimes", workday.getLateTimes());//迟到次数
             map.put("leaveral", workday.getLeaveral());//早退
+            map.put("leaveralTimes", workday.getLeaveralTimes());//早退次数
             list.add(map);
         }
         return list;
@@ -105,12 +111,15 @@ public class WorkdayController {
     public Result addWorkday(@RequestBody RequestWorkday requestWorkday) {
         String name = requestWorkday.getName();
         String time = requestWorkday.getTime();
-        int absence = requestWorkday.getAbsence();
+        double absence = requestWorkday.getAbsence();
+        double paidLeave = requestWorkday.getPaidLeave();
         double overtimen = requestWorkday.getOvertimen();
         double overtimed = requestWorkday.getOvertimed();
         double absenteeism = requestWorkday.getAbsenteeism();
         double late = requestWorkday.getLate();
+        int lateTimes = requestWorkday.getLateTimes();
         double leaveral = requestWorkday.getLeaveral();
+        int leaveralTimes = requestWorkday.getLeaveralTimes();
         String message = String.format("添加成功！");
         if (null == name || null == time) {
             message = String.format("添加失败！");
@@ -122,36 +131,45 @@ public class WorkdayController {
             message = String.format("员工姓名或时间不正确！");
             return ResultFactory.buildFailResult(message);
         }else{
-            int i = workdayDao.addWorkday(employer.getId(),createdate.getId(),absence,overtimen,overtimed,absenteeism,late,leaveral);
-            if(i==0){
-                message = String.format("添加失败！");
-                return ResultFactory.buildFailResult(message);
-            }else{
-                return ResultFactory.buildSuccessResult(message,i);
+            Workday workdayByEidAndCdid = workdayDao.getWorkdayByEidAndCdid(employer.getId(), createdate.getId());
+            if(workdayByEidAndCdid!=null){
+                message = String.format("该员工已存在该月份下的记录！");
+                return ResultFactory.buidResult(100,message,workdayByEidAndCdid);
+            }else {
+                int i = workdayDao.addWorkday(employer.getId(), createdate.getId(), paidLeave, absence, overtimen, overtimed, absenteeism, late, lateTimes, leaveral, leaveralTimes);
+                if (i == 0) {
+                    message = String.format("添加失败！");
+                    return ResultFactory.buildFailResult(message);
+                } else {
+                    return ResultFactory.buildSuccessResult(message, i);
+                }
             }
         }
     }
 
     //按员工姓名和时间修改出勤记录
     @CrossOrigin
-    @PutMapping("incomes/updateWorkday")
+    @PostMapping("incomes/updateWorkday")
     @ResponseBody
     public Result updateWorkday(@RequestBody RequestWorkday requestWorkday) {
         int id = requestWorkday.getId();
         String time = requestWorkday.getTime();
-        int absence = requestWorkday.getAbsence();
+        double absence = requestWorkday.getAbsence();
+        double paidLeave = requestWorkday.getPaidLeave();
         double overtimen = requestWorkday.getOvertimen();
         double overtimed = requestWorkday.getOvertimed();
         double absenteeism = requestWorkday.getAbsenteeism();
         double late = requestWorkday.getLate();
+        int lateTimes = requestWorkday.getLateTimes();
         double leaveral = requestWorkday.getLeaveral();
+        int leaveralTimes = requestWorkday.getLeaveralTimes();
          String message = String.format("修改成功！");
         Createdate createdate = createdateDao.getCreatedateByTime(time);
         if(null==createdate){
             message = String.format("员工姓名或时间不正确！");
             return ResultFactory.buildFailResult(message);
         }else {
-            int i = workdayDao.updateWorkday(id, absence, overtimen, overtimed, absenteeism, late, leaveral,createdate.getId());
+            int i = workdayDao.updateWorkday(id,paidLeave, absence, overtimen, overtimed, absenteeism, late,lateTimes, leaveral,leaveralTimes,createdate.getId());
             if (i == 0) {
                 message = String.format("修改失败！");
                 return ResultFactory.buildFailResult(message);
@@ -163,7 +181,7 @@ public class WorkdayController {
 
     //按ID删除出勤记录
     @CrossOrigin
-    @DeleteMapping("incomes/deleteWorkday")
+    @PostMapping("incomes/deleteWorkday")
     @ResponseBody
     public Result deleteWorkday(@RequestBody RequestWorkday requestWorkday) {
         String message = String.format("删除成功！");

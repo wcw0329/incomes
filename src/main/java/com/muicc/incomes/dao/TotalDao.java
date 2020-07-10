@@ -26,6 +26,11 @@ public interface TotalDao extends JpaRepository<Total,Integer> {
 
     @Transactional
     @Modifying
-    @Query(value = "delete from total where id = ?1 ",nativeQuery = true)
-    int deleteTotal(int id);
+    @Query(value = "update total set totalsum =?1 where cdid = ?2 ",nativeQuery = true)
+    int updateTotal(double totalsum,int cdid);
+
+    @Transactional
+    @Modifying
+    @Query(value = "delete from total where cdid = ?1 ",nativeQuery = true)
+    int deleteTotal(int cdid);
 }

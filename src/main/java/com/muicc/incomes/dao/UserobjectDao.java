@@ -14,16 +14,19 @@ public interface UserobjectDao extends JpaRepository<Userobject,Integer> {
     @Query(value = "select * from userobject where cdid = ?1",nativeQuery = true)
     List<Userobject> getUserobjectByCdid(int cdid);
 
-    @Query(value = "select * from userobject where udid = ?1",nativeQuery = true)
-    List<Userobject> getUserobjectByUdid(int udid);
+    @Query(value = "select * from userobject where eid = ?1",nativeQuery = true)
+    List<Userobject> getUserobjectByEid(int eid);
+
+    @Query(value = "select id from userobject where eid = ?1 and cdid = ?2",nativeQuery = true)
+    int getIdByEidAndCdid(int eid,int cdid);
 
     @Transactional
     @Modifying
-    @Query(value = "insert into userobject(udid,twid,txid,isid,cdid,wdids) values (?1,?2,?3,?4,?5,?6) ",nativeQuery = true)
-    int addUserobject(int udid,int twid,int txid,int isid,int cdid,int wdids);
-
-    @Query(value = "select max(id) from userobject where udid=?1 and twid=?2 and txid=?3 and isid=?4 and cdid=?5 and wdids=?6",nativeQuery = true)
-    Integer getUserobjectId(int udid,int twid,int txid,int isid,int cdid,int wdids);
+    @Query(value = "insert into userobject(cdid, eid, regularpay, work, holiday, allowanceids, awards, absence, initialsum, insurance, secondsum, cut, tax, sumpayable, qianzhang, note) " +
+            "values (?1,?2,?3,?4,?5,?6,?7,?8,?9,?10,?11,?12,?13,?14,?15,?16) ",nativeQuery = true)
+    int addUserobject(int cdid,int eid,double regularpay,double work,double holiday,double allowanceids,double awards,
+                      double absence,double initialsum,double insurance,double secondsum,double cut,double tax,
+                      double sumpayable,String qianzhang,String note);
 
     @Transactional
     @Modifying

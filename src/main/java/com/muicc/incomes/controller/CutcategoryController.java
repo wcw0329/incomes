@@ -71,7 +71,7 @@ public class CutcategoryController {
 
     //按ID修改扣款种类信息
     @CrossOrigin
-    @PutMapping("incomes/updateCutcategory")
+    @PostMapping("incomes/updateCutcategory")
     @ResponseBody
     public Result updateCutcategory(@RequestBody Cutcategory requestCutcategory) {
         int id =requestCutcategory.getId();//ID
@@ -93,7 +93,7 @@ public class CutcategoryController {
 
     //按ID删除扣款种类信息（假删除）
     @CrossOrigin
-    @PutMapping("incomes/deleteCutcategory")
+    @PostMapping("incomes/deleteCutcategory")
     @ResponseBody
     public Result deleteCutcategory(@RequestBody Cutcategory requestCutcategory) {
         int id =requestCutcategory.getId();//ID

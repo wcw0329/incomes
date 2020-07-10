@@ -4,8 +4,7 @@ import javax.persistence.*;
 import java.io.Serializable;
 import java.util.Objects;
 
-@Entity
-@Table(name = "cut")
+
 public class RequestCut implements Serializable {
     private int id;
     private int ccid;
@@ -13,10 +12,9 @@ public class RequestCut implements Serializable {
     private String category;
     private double cut;
     private int eid;
+    private String time;
+    private int cdid;
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id")
     public int getId() {
         return id;
     }
@@ -33,8 +31,7 @@ public class RequestCut implements Serializable {
         this.ename = ename;
     }
 
-    @Basic
-    @Column(name = "ccid")
+
     public int getCcid() {
         return ccid;
     }
@@ -43,8 +40,7 @@ public class RequestCut implements Serializable {
         this.ccid = ccid;
     }
 
-    @Basic
-    @Column(name = "cut")
+
     public double getCut() {
         return cut;
     }
@@ -53,8 +49,7 @@ public class RequestCut implements Serializable {
         this.cut = cut;
     }
 
-    @Basic
-    @Column(name = "eid")
+
     public int getEid() {
         return eid;
     }
@@ -71,19 +66,20 @@ public class RequestCut implements Serializable {
         this.category = category;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        RequestCut cut1 = (RequestCut) o;
-        return id == cut1.id &&
-                ccid == cut1.ccid &&
-                Double.compare(cut1.cut, cut) == 0 &&
-                eid == cut1.eid;
+    public String getTime() {
+        return time;
     }
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(id, ccid, cut, eid);
+    public void setTime(String time) {
+        this.time = time;
     }
+
+    public int getCdid() {
+        return cdid;
+    }
+
+    public void setCdid(int cdid) {
+        this.cdid = cdid;
+    }
+
 }

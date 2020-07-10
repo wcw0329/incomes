@@ -1,20 +1,19 @@
-package com.muicc.incomes.pojo;
+package com.muicc.incomes.model;
 
 import javax.persistence.*;
 import java.io.Serializable;
 
-@Entity
-@Table(name = "award")
-public class Award implements Serializable {
+public class RequestAward implements Serializable {
     private int id;
     private int acid;
+    private String acname;
     private double award;
     private int eid;
+    private String ename;
     private int cdid;
+    private String time;
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id")
+
     public int getId() {
         return id;
     }
@@ -23,8 +22,7 @@ public class Award implements Serializable {
         this.id = id;
     }
 
-    @Basic
-    @Column(name = "acid")
+
     public int getAcid() {
         return acid;
     }
@@ -33,8 +31,7 @@ public class Award implements Serializable {
         this.acid = acid;
     }
 
-    @Basic
-    @Column(name = "award")
+
     public double getAward() {
         return award;
     }
@@ -43,8 +40,6 @@ public class Award implements Serializable {
         this.award = award;
     }
 
-    @Basic
-    @Column(name = "eid")
     public int getEid() {
         return eid;
     }
@@ -53,13 +48,35 @@ public class Award implements Serializable {
         this.eid = eid;
     }
 
-    @Basic
-    @Column(name = "cdid")
     public int getCdid() {
         return cdid;
     }
 
     public void setCdid(int cdid) {
         this.cdid = cdid;
+    }
+
+    public String getAcname() {
+        return acname;
+    }
+
+    public void setAcname(String acname) {
+        this.acname = acname;
+    }
+
+    public String getEname() {
+        return ename;
+    }
+
+    public void setEname(String ename) {
+        this.ename = ename;
+    }
+
+    public String getTime() {
+        return time;
+    }
+
+    public void setTime(String time) {
+        this.time = time;
     }
 }

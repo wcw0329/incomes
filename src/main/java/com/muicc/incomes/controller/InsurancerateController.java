@@ -2,7 +2,6 @@ package com.muicc.incomes.controller;
 
 
 import com.muicc.incomes.dao.EmployerDao;
-import com.muicc.incomes.dao.InsuranceDao;
 import com.muicc.incomes.dao.InsurancerateDao;
 import com.muicc.incomes.dao.Userdefault1Dao;
 import com.muicc.incomes.model.RequestInsurancerate;
@@ -27,8 +26,6 @@ public class InsurancerateController {
     @Autowired
     InsurancerateDao insurancerateDao;
 
-    @Autowired
-    InsuranceDao insuranceDao;
 
     @Autowired
     EmployerDao employerDao;
@@ -88,8 +85,7 @@ public class InsurancerateController {
         Integer lastId = userdefault1Dao.getLastId(eid);
         Userdefault1 userdefault1ByUdid = userdefault1Dao.getUserdefault1ByUdid(lastId);
         double insurance =userdefault1ByUdid.getInsurancebase()*insurancerate+fixedfee;
-        int j = insuranceDao.addInsurance(insurance,insurancerateByEid.getId());
-        if(i==0||j==0){
+        if(i==0){
             message = String.format("添加失败！");
             return ResultFactory.buildFailResult(message);
         }else{
@@ -99,7 +95,7 @@ public class InsurancerateController {
 
     //按社保记录ID修改社保信息
     @CrossOrigin
-    @PutMapping("incomes/updateInsurancerate")
+    @PostMapping("incomes/updateInsurancerate")
     @ResponseBody
     public Result updateInsurancerate(@RequestBody RequestInsurancerate requestInsurancerate) throws ParseException {
         String ename = requestInsurancerate.getEname();//员工姓名
@@ -119,8 +115,7 @@ public class InsurancerateController {
         Integer lastId = userdefault1Dao.getLastId(eid);
         Userdefault1 userdefault1ByUdid = userdefault1Dao.getUserdefault1ByUdid(lastId);
         double insurance =userdefault1ByUdid.getInsurancebase()*insurancerateByEid.getInsurancerate()+insurancerateByEid.getFixedfee();
-        int j = insuranceDao.updateInsurance(insurance,insurancerateByEid.getId());
-        if(i==0||j==0){
+        if(i==0){
             message = String.format("修改失败！");
             return ResultFactory.buildFailResult(message);
         }else{
@@ -130,15 +125,14 @@ public class InsurancerateController {
 
     //按社保记录ID删除社保信息（假删除）
     @CrossOrigin
-    @PutMapping("incomes/deleteInsurancerate")
+    @PostMapping("incomes/deleteInsurancerate")
     @ResponseBody
     public Result deleteInsurancerate(@RequestBody RequestInsurancerate requestInsurancerate) {
         int id =requestInsurancerate.getId();//ID
         String message = String.format("删除成功！");
 
         int i = insurancerateDao.deleteInsurancerate(id);
-        int j = insuranceDao.deleteInsurance(id);
-        if(i==0||j==0){
+        if(i==0){
             message = String.format("删除失败！");
             return ResultFactory.buildFailResult(message);
         }else{

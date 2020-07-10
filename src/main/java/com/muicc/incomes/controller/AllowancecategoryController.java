@@ -71,7 +71,7 @@ public class AllowancecategoryController {
 
     //按ID修改补贴种类信息
     @CrossOrigin
-    @PutMapping("incomes/updateAllowancecategory")
+    @PostMapping("incomes/updateAllowancecategory")
     @ResponseBody
     public Result updateAllowancecategory(@RequestBody Allowancecategory requestAllowancecategory) {
         int id =requestAllowancecategory.getId();//ID
@@ -93,7 +93,7 @@ public class AllowancecategoryController {
 
     //按ID删除补贴种类信息（假删除）
     @CrossOrigin
-    @PutMapping("incomes/deleteAllowancecategory")
+    @PostMapping("incomes/deleteAllowancecategory")
     @ResponseBody
     public Result deleteAllowancecategory(@RequestBody Allowancecategory requestAllowancecategory) {
         int id =requestAllowancecategory.getId();//ID

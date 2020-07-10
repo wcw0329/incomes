@@ -1,22 +1,30 @@
 package com.muicc.incomes.pojo;
 
 import javax.persistence.*;
-import java.io.Serializable;
 import java.util.Objects;
 
 @Entity
 @Table(name = "userobject")
-public class Userobject implements Serializable {
+public class Userobject {
     private int id;
-    private int udid;
-    private int twid;
-    private int txid;
-    private int isid;
+    private int eid;
     private int cdid;
-    private Integer wdids;
+    private double regularpay;
+    private double work;
+    private double holiday;
+    private double allowanceids;
+    private double awards;
+    private double absence;
+    private double initialsum;
+    private double insurance;
+    private double secondsum;
+    private double cut;
+    private double tax;
+    private double sumpayable;
+    private String qianzhang;
+    private String note;
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     public int getId() {
         return id;
@@ -27,45 +35,14 @@ public class Userobject implements Serializable {
     }
 
     @Basic
-    @Column(name = "udid")
-    public int getUdid() {
-        return udid;
+    @Column(name = "eid")
+    public int getEid() {
+        return eid;
     }
 
-    public void setUdid(int udid) {
-        this.udid = udid;
+    public void setEid(int eid) {
+        this.eid = eid;
     }
-
-    @Basic
-    @Column(name = "twid")
-    public int getTwid() {
-        return twid;
-    }
-
-    public void setTwid(int twid) {
-        this.twid = twid;
-    }
-
-    @Basic
-    @Column(name = "txid")
-    public int getTxid() {
-        return txid;
-    }
-
-    public void setTxid(int txid) {
-        this.txid = txid;
-    }
-
-    @Basic
-    @Column(name = "isid")
-    public int getIsid() {
-        return isid;
-    }
-
-    public void setIsid(int isid) {
-        this.isid = isid;
-    }
-
     @Basic
     @Column(name = "cdid")
     public int getCdid() {
@@ -77,31 +54,143 @@ public class Userobject implements Serializable {
     }
 
     @Basic
-    @Column(name = "wdids")
-    public Integer getWdids() {
-        return wdids;
+    @Column(name = "regularpay")
+    public double getRegularpay() {
+        return regularpay;
     }
 
-    public void setWdids(Integer wdids) {
-        this.wdids = wdids;
+    public void setRegularpay(double regularpay) {
+        this.regularpay = regularpay;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Userobject that = (Userobject) o;
-        return id == that.id &&
-                udid == that.udid &&
-                twid == that.twid &&
-                txid == that.txid &&
-                isid == that.isid &&
-                cdid == that.cdid &&
-                Objects.equals(wdids, that.wdids);
+    @Basic
+    @Column(name = "work")
+    public double getWork() {
+        return work;
     }
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(id, udid, twid, txid, isid, cdid, wdids);
+    public void setWork(double work) {
+        this.work = work;
     }
+
+    @Basic
+    @Column(name = "holiday")
+    public double getHoliday() {
+        return holiday;
+    }
+
+    public void setHoliday(double holiday) {
+        this.holiday = holiday;
+    }
+
+    @Basic
+    @Column(name = "allowanceids")
+    public double getAllowanceids() {
+        return allowanceids;
+    }
+
+    public void setAllowanceids(double allowanceids) {
+        this.allowanceids = allowanceids;
+    }
+
+    @Basic
+    @Column(name = "awards")
+    public double getAwards() {
+        return awards;
+    }
+
+    public void setAwards(double awards) {
+        this.awards = awards;
+    }
+
+    @Basic
+    @Column(name = "absence")
+    public double getAbsence() {
+        return absence;
+    }
+
+    public void setAbsence(double absence) {
+        this.absence = absence;
+    }
+
+    @Basic
+    @Column(name = "initialsum")
+    public double getInitialsum() {
+        return initialsum;
+    }
+
+    public void setInitialsum(double initialsum) {
+        this.initialsum = initialsum;
+    }
+
+    @Basic
+    @Column(name = "insurance")
+    public double getInsurance() {
+        return insurance;
+    }
+
+    public void setInsurance(double insurance) {
+        this.insurance = insurance;
+    }
+
+    @Basic
+    @Column(name = "secondsum")
+    public double getSecondsum() {
+        return secondsum;
+    }
+
+    public void setSecondsum(double secondsum) {
+        this.secondsum = secondsum;
+    }
+
+    @Basic
+    @Column(name = "cut")
+    public double getCut() {
+        return cut;
+    }
+
+    public void setCut(double cut) {
+        this.cut = cut;
+    }
+
+    @Basic
+    @Column(name = "tax")
+    public double getTax() {
+        return tax;
+    }
+
+    public void setTax(double tax) {
+        this.tax = tax;
+    }
+
+    @Basic
+    @Column(name = "sumpayable")
+    public double getSumpayable() {
+        return sumpayable;
+    }
+
+    public void setSumpayable(double sumpayable) {
+        this.sumpayable = sumpayable;
+    }
+
+    @Basic
+    @Column(name = "qianzhang")
+    public String getQianzhang() {
+        return qianzhang;
+    }
+
+    public void setQianzhang(String qianzhang) {
+        this.qianzhang = qianzhang;
+    }
+
+    @Basic
+    @Column(name = "note")
+    public String getNote() {
+        return note;
+    }
+
+    public void setNote(String note) {
+        this.note = note;
+    }
+
 }

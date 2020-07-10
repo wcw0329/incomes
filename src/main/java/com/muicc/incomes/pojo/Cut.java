@@ -11,6 +11,7 @@ public class Cut implements Serializable {
     private int ccid;
     private double cut;
     private int eid;
+    private int cdid;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -53,19 +54,13 @@ public class Cut implements Serializable {
         this.eid = eid;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Cut cut1 = (Cut) o;
-        return id == cut1.id &&
-                ccid == cut1.ccid &&
-                Double.compare(cut1.cut, cut) == 0 &&
-                eid == cut1.eid;
+    @Basic
+    @Column(name = "cdid")
+    public int getCdid() {
+        return cdid;
     }
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(id, ccid, cut, eid);
+    public void setCdid(int cdid) {
+        this.cdid = cdid;
     }
 }

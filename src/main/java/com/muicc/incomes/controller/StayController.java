@@ -64,7 +64,7 @@ public class StayController {
 
     //按旷工扣款规则ID修改旷工扣款规则信息
     @CrossOrigin
-    @PutMapping("incomes/updateStay")
+    @PostMapping("incomes/updateStay")
     @ResponseBody
     public Result updateStay(@RequestBody Stay requestStay) throws ParseException {
         String message = String.format("修改成功！");
@@ -83,7 +83,7 @@ public class StayController {
 
     //按ID删除旷工扣款规则信息
     @CrossOrigin
-    @DeleteMapping("incomes/deleteStay")
+    @PostMapping("incomes/deleteStay")
     @ResponseBody
     public Result deleteStay(@RequestBody Stay requestStay) {
         String message = String.format("删除成功！");

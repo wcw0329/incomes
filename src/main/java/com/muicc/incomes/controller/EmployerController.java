@@ -98,7 +98,7 @@ public class EmployerController {
 
     //按员工工号修改员工信息
     @CrossOrigin
-    @PutMapping("incomes/updateEmployer")
+    @PostMapping("incomes/updateEmployer")
     @ResponseBody
     public Result updateEmployer(@RequestBody Employer requestEmployer) {
         int id =requestEmployer.getId();//工号
@@ -119,7 +119,7 @@ public class EmployerController {
 
     //按员工工号和姓名删除员工信息（假删除）
     @CrossOrigin
-    @PutMapping("incomes/deleteEmployer")
+    @PostMapping("incomes/deleteEmployer")
     @ResponseBody
     public Result deleteEmployer(@RequestBody Employer requestEmployer) {
         int id =requestEmployer.getId();//工号

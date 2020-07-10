@@ -136,7 +136,7 @@ public class TaxrateController {
 
     //删除所有的税率信息
     @CrossOrigin
-    @PutMapping(value = "incomes/deleteTaxrate")
+    @PostMapping(value = "incomes/deleteTaxrate")
     @ResponseBody
     public Result deleteTaxrate() {
         String message = String.format("删除成功！");

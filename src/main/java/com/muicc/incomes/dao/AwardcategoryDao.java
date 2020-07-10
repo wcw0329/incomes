@@ -20,6 +20,9 @@ public interface AwardcategoryDao extends JpaRepository<Awardcategory,Integer> {
     @Query(value = "select id from awardcategory where name =?1 ",nativeQuery = true)
     int getIdByName(String name);
 
+    @Query(value = "select id from awardcategory where name =?1 and status = 1",nativeQuery = true)
+    int getIdByNameAndShown(String name);
+
     @Query(value = "select name from awardcategory where id =?1 ",nativeQuery = true)
     String getNameById(int id);
 

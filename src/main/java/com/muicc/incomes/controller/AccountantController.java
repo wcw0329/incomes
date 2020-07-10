@@ -100,7 +100,7 @@ public class AccountantController {
 
     //按管理员账号修改管理员信息
     @CrossOrigin
-    @PutMapping("incomes/updateAccountant")
+    @PostMapping("incomes/updateAccountant")
     @ResponseBody
     public Result updateAccountant(@RequestBody Accountant requestAccountant) {
         String name =requestAccountant.getName();//账号
@@ -122,7 +122,7 @@ public class AccountantController {
 
     //按管理员账号删除管理员信息
     @CrossOrigin
-    @DeleteMapping("incomes/deleteAccountant")
+    @PostMapping("incomes/deleteAccountant")
     @ResponseBody
     public Result deleteAccountant(@RequestBody Accountant requestAccountant) {
         String message = String.format("删除成功！");

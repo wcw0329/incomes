@@ -4,8 +4,7 @@ import javax.persistence.*;
 import java.io.Serializable;
 import java.util.Objects;
 
-@Entity
-@Table(name = "allowance")
+
 public class RequestAllowance implements Serializable {
     private int id;
     private int alcid;
@@ -13,10 +12,10 @@ public class RequestAllowance implements Serializable {
     private String category;
     private double allowance;
     private int eid;
+    private String time;
+    private int cdid;
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id")
+
     public int getId() {
         return id;
     }
@@ -33,8 +32,7 @@ public class RequestAllowance implements Serializable {
         this.ename = ename;
     }
 
-    @Basic
-    @Column(name = "alcid")
+
     public int getAlcid() {
         return alcid;
     }
@@ -43,8 +41,7 @@ public class RequestAllowance implements Serializable {
         this.alcid = alcid;
     }
 
-    @Basic
-    @Column(name = "allowance")
+
     public double getAllowance() {
         return allowance;
     }
@@ -53,8 +50,7 @@ public class RequestAllowance implements Serializable {
         this.allowance = allowance;
     }
 
-    @Basic
-    @Column(name = "eid")
+
     public int getEid() {
         return eid;
     }
@@ -72,19 +68,19 @@ public class RequestAllowance implements Serializable {
         this.category = category;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        RequestAllowance allowance1 = (RequestAllowance) o;
-        return id == allowance1.id &&
-                alcid == allowance1.alcid &&
-                Double.compare(allowance1.allowance, allowance) == 0 &&
-                eid == allowance1.eid;
+    public String getTime() {
+        return time;
     }
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(id, alcid, allowance, eid);
+    public void setTime(String time) {
+        this.time = time;
+    }
+
+    public int getCdid() {
+        return cdid;
+    }
+
+    public void setCdid(int cdid) {
+        this.cdid = cdid;
     }
 }

@@ -11,6 +11,7 @@ public class Allowance implements Serializable {
     private int alcid;
     private double allowance;
     private int eid;
+    private int cdid;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -53,19 +54,13 @@ public class Allowance implements Serializable {
         this.eid = eid;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Allowance allowance1 = (Allowance) o;
-        return id == allowance1.id &&
-                alcid == allowance1.alcid &&
-                Double.compare(allowance1.allowance, allowance) == 0 &&
-                eid == allowance1.eid;
+    @Basic
+    @Column(name = "cdid")
+    public int getCdid() {
+        return cdid;
     }
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(id, alcid, allowance, eid);
+    public void setCdid(int cdid) {
+        this.cdid = cdid;
     }
 }

@@ -106,7 +106,7 @@ public class SumController {
 
     //按ID删除临时工资信息
     @CrossOrigin
-    @DeleteMapping("incomes/deleteSum")
+    @PostMapping("incomes/deleteSum")
     @ResponseBody
     public Result deleteSum(@RequestBody Sum requestStay){
         String message = String.format("删除成功！");

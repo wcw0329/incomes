@@ -9,22 +9,30 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
 public interface AllowanceDao extends JpaRepository<Allowance,Integer> {
-    @Query(value = "select * from allowance where alcid = ?1 and eid =?2 order by id asc",nativeQuery = true)
-    List<Allowance> getAllowanceByEidAndAlcid(int alcid,int eid);
+    @Query(value = "select * from allowance where eid = ?1 and alcid =?2 and cdid =?3",nativeQuery = true)
+    Allowance getAllowanceByEidAndAlcidAndCdid(int eid, int alcid,int cdid);
 
-    @Query(value = "select max(eid) from allowance ",nativeQuery = true)
-    int getMaxId();
+    @Query(value = "select * from allowance order by cdid desc,eid asc",nativeQuery = true)
+    List<Allowance> getAllAllowance();
 
-    @Query(value = "select sum(allowance) from allowance where eid =?1",nativeQuery = true)
-    double getSumAllowance(int eid);
+    @Query(value = "select * from allowance where eid = ?1 and cdid =?2",nativeQuery = true)
+    Allowance getByEidAndCdid(int eid,int cdid);
 
-    @Transactional
-    @Modifying
-    @Query(value = "insert into allowance(alcid, allowance, eid) values (?1,?2,?3) ",nativeQuery = true)
-    int addAllowance(int alcid,double allowance,int eid);
+    @Query(value = "select sum(allowance) from allowance where eid = ?1 and cdid =?2",nativeQuery = true)
+    double getAllowanceByEidAndCdid(int eid,int cdid);
 
     @Transactional
     @Modifying
-    @Query(value = "delete from allowance where eid = ?1 ",nativeQuery = true)
-    int deleteAllowance(int eid);
+    @Query(value = "insert into allowance(alcid, allowance, eid,cdid ) values (?1,?2,?3,?4) ",nativeQuery = true)
+    int addAllowance(int alcid,double allowance,int eid,int cdid);
+
+    @Transactional
+    @Modifying
+    @Query(value = "update allowance set alcid =?2, allowance =?3,eid =?4,cdid =?5 where id = ?1 ",nativeQuery = true)
+    int updateAllowance(int id,int alcid,double allowance,int eid,int cdid);
+
+    @Transactional
+    @Modifying
+    @Query(value = "delete from allowance where id = ?1 ",nativeQuery = true)
+    int deleteAllowance(int id);
 }

@@ -71,7 +71,7 @@ public class AwardcategoryController {
 
     //按ID修改奖金种类信息
     @CrossOrigin
-    @PutMapping("incomes/updateAwardcategory")
+    @PostMapping("incomes/updateAwardcategory")
     @ResponseBody
     public Result updateAwardcategory(@RequestBody Awardcategory requestAwardcategory) {
         int id =requestAwardcategory.getId();//ID
@@ -93,7 +93,7 @@ public class AwardcategoryController {
 
     //按ID删除奖金种类信息（假删除）
     @CrossOrigin
-    @PutMapping("incomes/deleteAwardcategory")
+    @PostMapping("incomes/deleteAwardcategory")
     @ResponseBody
     public Result deleteAwardcategory(@RequestBody Awardcategory requestAwardcategory) {
         int id =requestAwardcategory.getId();//ID

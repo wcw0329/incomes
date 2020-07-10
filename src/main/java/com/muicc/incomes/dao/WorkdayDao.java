@@ -15,6 +15,9 @@ public interface WorkdayDao extends JpaRepository<Workday,Integer> {
     @Query(value = "select * from workday order by cdid desc",nativeQuery = true)
     List<Workday> getAllWorkday();
 
+    @Query(value = "select * from workday where cdid = ?1",nativeQuery = true)
+    List<Workday> getWorkdayByCdid(int cdid);
+
     @Query(value = "select * from workday where id = ?1 order by cdid desc",nativeQuery = true)
     Workday getWorkdayById(int id);
 
@@ -23,15 +26,20 @@ public interface WorkdayDao extends JpaRepository<Workday,Integer> {
 
     @Transactional
     @Modifying
-    @Query(value = "insert into workday(eid,cdid,absence,overtimen,overtimed,status,absenteeism,late,leaveral) " +
-            "values (?1,?2,?3,?4,?5,1,?6,?7,?8)",nativeQuery = true)
-    int addWorkday(int eid, int cdid,int absence,double overtimen,double overtimed,double absenteeism,double late,double leaveral);
+    @Query(value = "insert into workday(eid,cdid,paid_leave,absence,overtimen,overtimed,status,absenteeism,late,late_times,leaveral,leaveral_times) " +
+            "values (?1,?2,?3,?4,?5,?6,1,?7,?8,?9,?10,?11)",nativeQuery = true)
+    int addWorkday(int eid, int cdid,double paidLeave,double absence,double overtimen,double overtimed,double absenteeism,double late,int lateTimes,double leaveral,int leaveralTimes);
 
     @Transactional
     @Modifying
-    @Query(value = "update workday set absence = ?2,overtimen = ?3, overtimed = ?4,absenteeism = ?5,late = ?6,leaveral = ?7," +
-            "cdid = ?8 where id = ?1 ",nativeQuery = true)
-    int updateWorkday(int id, int absence,double overtimen,double overtimed,double absenteeism,double late,double leaveral,int cdid);
+    @Query(value = "update workday set paid_leave = ?2,absence = ?3,overtimen = ?4, overtimed = ?5,absenteeism = ?6,late = ?7,late_times = ?8,leaveral = ?9,leaveral_times = ?10," +
+            "cdid = ?11 where id = ?1 ",nativeQuery = true)
+    int updateWorkday(int id,double paidLeave, double absence,double overtimen,double overtimed,double absenteeism,double late,int lateTimes,double leaveral,int leaveralTimes,int cdid);
+
+    @Transactional
+    @Modifying
+    @Query(value = "update workday set status = ?1 where cdid = ?2 ",nativeQuery = true)
+    int updateWorkdayStatus(int status,int cdid);
 
     @Transactional
     @Modifying

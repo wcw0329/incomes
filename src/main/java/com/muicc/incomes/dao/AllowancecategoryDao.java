@@ -16,8 +16,15 @@ public interface AllowancecategoryDao extends JpaRepository<Allowancecategory,In
     @Query(value = "select * from allowancecategory where shown =?1 and status = 1 order by id asc",nativeQuery = true)
     List<Allowancecategory> getAllowancecategoryByShown(int shown);
 
-    @Query(value = "select id from allowancecategory where name =?1 and status = 1",nativeQuery = true)
+    @Query(value = "select id from allowancecategory where name =?1",nativeQuery = true)
     int getIdByName(String name);
+
+    @Query(value = "select id from allowancecategory where name =?1 and status = 1",nativeQuery = true)
+    int getIdByNameAndShown(String name);
+
+    @Query(value = "select name from allowancecategory where id =?1 ",nativeQuery = true)
+    String getNameById(int id);
+
 
     @Transactional
     @Modifying

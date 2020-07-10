@@ -1,30 +1,19 @@
 package com.muicc.incomes.pojo;
 
 import javax.persistence.*;
-import java.io.Serializable;
 import java.util.Objects;
 
-
 @Entity
-@Table(name = "aways")
-public class Aways implements Serializable {
+public class Aways {
+    private int id;
+    private int shown;
+    private double cutmoney;
+    private int eid;
+    private int cdid;
+    private int status;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id")
-    private int id;
-    @Column(name = "shown")
-    private int shown;
-    @Column(name = "cutmoney")
-    private Double cutmoney;
-    @Column(name = "workdayid")
-    private int workdayid;
-    @Column(name = "stayid")
-    private int stayid;
-    @Column(name = "awardsid")
-    private int awardsid;
-
-    @Id
     @Column(name = "id")
     public int getId() {
         return id;
@@ -46,7 +35,7 @@ public class Aways implements Serializable {
 
     @Basic
     @Column(name = "cutmoney")
-    public Double getCutmoney() {
+    public double getCutmoney() {
         return cutmoney;
     }
 
@@ -54,38 +43,34 @@ public class Aways implements Serializable {
         this.cutmoney = cutmoney;
     }
 
-    public void setCutmoney(Double cutmoney) {
-        this.cutmoney = cutmoney;
+    @Basic
+    @Column(name = "eid")
+    public int getEid() {
+        return eid;
+    }
+
+    public void setEid(int eid) {
+        this.eid = eid;
     }
 
     @Basic
-    @Column(name = "workdayid")
-    public int getWorkdayid() {
-        return workdayid;
+    @Column(name = "cdid")
+    public int getCdid() {
+        return cdid;
     }
 
-    public void setWorkdayid(int workdayid) {
-        this.workdayid = workdayid;
-    }
-
-    @Basic
-    @Column(name = "stayid")
-    public int getStayid() {
-        return stayid;
-    }
-
-    public void setStayid(int stayid) {
-        this.stayid = stayid;
+    public void setCdid(int cdid) {
+        this.cdid = cdid;
     }
 
     @Basic
-    @Column(name = "awardsid")
-    public int getAwardsid() {
-        return awardsid;
+    @Column(name = "status")
+    public int getStatus() {
+        return status;
     }
 
-    public void setAwardsid(int awardsid) {
-        this.awardsid = awardsid;
+    public void setStatus(int status) {
+        this.status = status;
     }
 
     @Override
@@ -95,14 +80,14 @@ public class Aways implements Serializable {
         Aways aways = (Aways) o;
         return id == aways.id &&
                 shown == aways.shown &&
-                workdayid == aways.workdayid &&
-                stayid == aways.stayid &&
-                awardsid == aways.awardsid &&
-                Objects.equals(cutmoney, aways.cutmoney);
+                Double.compare(aways.cutmoney, cutmoney) == 0 &&
+                eid == aways.eid &&
+                cdid == aways.cdid &&
+                status == aways.status;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, shown, cutmoney, workdayid, stayid, awardsid);
+        return Objects.hash(id, shown, cutmoney, eid, cdid, status);
     }
 }
