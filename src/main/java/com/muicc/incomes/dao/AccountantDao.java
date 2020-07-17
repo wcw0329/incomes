@@ -10,9 +10,6 @@ import java.util.List;
 
 public interface AccountantDao extends JpaRepository<Accountant,Integer>{
 
-    @Query(value = "select * from accountant where id = ?1",nativeQuery = true)
-    Accountant getAccountantById(int id);
-
     @Query(value = "select * from accountant where name = ?1 and password = ?2",nativeQuery = true)
     Accountant getAccountantByNameAndPassword(String name,String password);
 

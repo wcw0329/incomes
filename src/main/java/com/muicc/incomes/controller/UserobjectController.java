@@ -93,13 +93,13 @@ public class UserobjectController {
             Employer employerById = employerDao.getEmployerById(userobject.getEid());
             map.put("name", employerById.getName());//姓名
             map.put("regularpay",userobject.getRegularpay());//基本工资
-            map.put("overtime",userobject.getRegularpay());//加班
-            map.put("absence",userobject.getRegularpay());//旷工
-            map.put("holiday",userobject.getRegularpay());//请假
-            map.put("allowanceids",userobject.getRegularpay());//补贴
-            map.put("awards",userobject.getRegularpay());//奖金
-            map.put("initialsum",userobject.getRegularpay());//工资合计
-            map.put("insurance",userobject.getRegularpay());//社保
+            map.put("overtime",userobject.getWork());//加班
+            map.put("absence",userobject.getAbsence());//旷工
+            map.put("holiday",userobject.getHoliday());//请假
+            map.put("allowanceids",userobject.getAllowanceids());//补贴
+            map.put("awards",userobject.getAwards());//奖金
+            map.put("initialsum",userobject.getInitialsum());//工资合计
+            map.put("insurance",userobject.getInsurance());//社保
             map.put("secondsum",userobject.getSecondsum());//应付金额
             map.put("cut",userobject.getCut());//扣借款
             map.put("tax",userobject.getTax());//个税

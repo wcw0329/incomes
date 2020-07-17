@@ -21,8 +21,18 @@ public interface AwaysDao extends JpaRepository<Aways,Integer> {
 
     @Transactional
     @Modifying
-    @Query(value = "insert into aways(shown,cutmoney,workdayid,stayid,awardsid) values (?1,?2,?3,?4,?5) ",nativeQuery = true)
-    int addAways(int shown,int cutmoney,int workdayid,int stayid,int awardsid);
+    @Query(value = "insert into aways(shown,cutmoney,eid,cdid,status) values (?1,?2,?3,?4,?5) ",nativeQuery = true)
+    int addAways(int shown,double cutmoney,int eid,int cdid,int status);
+
+    @Transactional
+    @Modifying
+    @Query(value = "update aways set cutmoney = ?1 where eid = ?1 and cdid =?2 ",nativeQuery = true)
+    int updateAways(double cutmoney,int eid,int cdid);
+
+    @Transactional
+    @Modifying
+    @Query(value = "delete from aways where eid = ?1 and cdid =?2 ",nativeQuery = true)
+    int deleteAways(int eid,int cdid);
 
     @Transactional
     @Modifying

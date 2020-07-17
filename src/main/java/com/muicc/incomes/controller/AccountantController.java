@@ -46,14 +46,24 @@ public class AccountantController {
             return ResultFactory.buildFailResult(message);
         }
 
-        Accountant accountant = accountantDao.getAccountantByNameAndPassword(name,password);
-        if(null==accountant){
-            message = String.format("用户名或密码不正确！");
-            return ResultFactory.buildFailResult(message);
-        }else {
+        List<Accountant> allAccountant = accountantDao.getAllAccountant();
+        if(allAccountant.size()==0){
+            message = String.format("管理员账号注册成功！");
+            int i = accountantDao.addAccountant(name, password);
+            Accountant accountant = accountantDao.getAccountantByNameAndPassword(name,password);
             session.setAttribute("accountant", accountant);
-            return ResultFactory.buildSuccessResult(message, accountant);
+            return ResultFactory.buidResult(100,message,accountant);
+        }else{
+            Accountant accountant = accountantDao.getAccountantByNameAndPassword(name,password);
+            if(null==accountant){
+                message = String.format("用户名或密码不正确！");
+                return ResultFactory.buildFailResult(message);
+            }else {
+                session.setAttribute("accountant", accountant);
+                return ResultFactory.buildSuccessResult(message, accountant);
+            }
         }
+
     }
 
 

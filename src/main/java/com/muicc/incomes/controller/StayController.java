@@ -37,7 +37,8 @@ public class StayController {
             map.put("num", i+1);//序号
             map.put("id", stay.getId());//ID
             map.put("updatedate",stay.getUpdatedate());//更新时间
-            map.put("bei", stay.getBei());//奖励金额
+            map.put("bei", stay.getBei());//旷工扣款比列
+            map.put("time", stay.getTime());//迟到早退时间限制
             list.add(map);
         }
         return list;
@@ -49,11 +50,12 @@ public class StayController {
     @ResponseBody
     public Result addStay(@RequestBody Stay requestStay) throws ParseException {
         String message = String.format("添加成功！");
+        double time = requestStay.getTime();//迟到早退时间限制
         Double bei = requestStay.getBei();//旷工扣款倍数
         String updatedate = requestStay.getUpdatedate();//更新时间
 
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
-        int i = stayDao.addStay(bei,simpleDateFormat.parse(updatedate));
+        int i = stayDao.addStay(bei,time,simpleDateFormat.parse(updatedate));
         if(i==0){
             message = String.format("添加失败！");
             return ResultFactory.buildFailResult(message);
@@ -68,11 +70,12 @@ public class StayController {
     @ResponseBody
     public Result updateStay(@RequestBody Stay requestStay) throws ParseException {
         String message = String.format("修改成功！");
-        Double bei = requestStay.getBei();//旷工扣款倍数
+        double time = requestStay.getTime();//迟到早退时间限制
+        double bei = requestStay.getBei();//旷工扣款倍数
         String updatedate = requestStay.getUpdatedate();//更新时间
         int id = requestStay.getId();//ID
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
-        int i = stayDao.updateStay(bei,simpleDateFormat.parse(updatedate),id);
+        int i = stayDao.updateStay(bei,time,simpleDateFormat.parse(updatedate),id);
         if(i==0){
             message = String.format("修改失败！");
             return ResultFactory.buildFailResult(message);

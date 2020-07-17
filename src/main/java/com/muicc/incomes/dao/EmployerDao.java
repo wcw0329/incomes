@@ -34,6 +34,6 @@ public interface EmployerDao extends JpaRepository<Employer,Integer> {
 
     @Transactional
     @Modifying
-    @Query(value = "update employer set status = 0 where id = ?1",nativeQuery = true)
+    @Query(value = "delete from employer where id = ?1",nativeQuery = true)
     int deleteEmployer(int id);
 }

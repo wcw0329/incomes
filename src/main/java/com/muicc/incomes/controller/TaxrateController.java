@@ -53,7 +53,6 @@ public class TaxrateController {
         return list;
     }
 
-
     //添加税率信息
     @CrossOrigin
     @PostMapping("incomes/addTaxrate")
@@ -89,50 +88,6 @@ public class TaxrateController {
         }
         return ResultFactory.buildSuccessResult(message, updatedateByDate);
     }
-
-
-    //修改税率信息
-//    @CrossOrigin
-//    @PutMapping("incomes/updateTaxrate")
-//    @ResponseBody
-//    public Result updateTaxrate(@RequestBody RequestTaxrate requestTaxrate) throws ParseException {
-//        String message = String.format("修改成功！");
-//        double min = requestTaxrate.getMin();//工资下限
-//        double max =requestTaxrate.getMax();//工资上限
-//        double taxrate =requestTaxrate.getTaxrate();//对应税率
-//        int threshold =requestTaxrate.getThreshold();//起征税点
-//        String updatedate =requestTaxrate.getUpdatedate();//更新时间
-//        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
-//            int i = taxrateDao.deleteTaxrate();
-//            if(i==0) {
-//                message = String.format("删除失败！");
-//                return ResultFactory.buildFailResult(message);
-//            }
-//            Updatedate updatedateByDate = updatedateDao.getUpdatedateByDate(simpleDateFormat.parse(updatedate));
-//            if(null==updatedateByDate){
-//                int j = updatedateDao.addUpdatedate(simpleDateFormat.parse(updatedate));
-//                if (j == 0) {
-//                    message = String.format("添加失败！");
-//                    return ResultFactory.buildFailResult(message);
-//                }else {
-//                    Updatedate updatedateByDate2 = updatedateDao.getUpdatedateByDate(simpleDateFormat.parse(updatedate));
-//                    int k = taxrateDao.addTaxrate(updatedateByDate2.getId(), min, max, taxrate, threshold);
-//                    if (k == 0) {
-//                        message = String.format("添加失败！");
-//                        return ResultFactory.buildFailResult(message);
-//                    }
-//                }
-//            }else {
-//                int j = taxrateDao.addTaxrate(updatedateByDate.getId(), min, max, taxrate, threshold);
-//                if (j == 0) {
-//                    message = String.format("添加失败！");
-//                    return ResultFactory.buildFailResult(message);
-//                }
-//            }
-//            return ResultFactory.buildSuccessResult(message,updatedateByDate);
-//    }
-
-
 
     //删除所有的税率信息
     @CrossOrigin

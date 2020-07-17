@@ -19,13 +19,13 @@ public interface StayDao extends JpaRepository<Stay,Integer> {
 
     @Transactional
     @Modifying
-    @Query(value = "insert into stay(bei,updatedate) values (?1,?2) ",nativeQuery = true)
-    int addStay(double bei,Date updatedate);
+    @Query(value = "insert into stay(bei,time,updatedate) values (?1,?2,?3) ",nativeQuery = true)
+    int addStay(double bei,double time,Date updatedate);
 
     @Transactional
     @Modifying
-    @Query(value = "update stay set bei =?1 ,updatedate =?2 where id = ?3 ",nativeQuery = true)
-    int updateStay(double bei,Date updatedate,int id);
+    @Query(value = "update stay set bei =?1 ,time =?2 ,updatedate =?3 where id = ?4 ",nativeQuery = true)
+    int updateStay(double bei,double time,Date updatedate,int id);
 
     @Transactional
     @Modifying

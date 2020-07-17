@@ -18,6 +18,8 @@ public class Stay implements Serializable {
     private Date updatedate;
     @Column(name = "bei")
     private Double bei;
+    @Column(name = "time")
+    private Double time;
 
     public int getId() {
         return id;
@@ -42,5 +44,13 @@ public class Stay implements Serializable {
 
     public void setBei(Double bei) {
         this.bei = bei;
+    }
+
+    public Double getTime() {
+        return time;
+    }
+
+    public void setTime(Double time) {
+        this.time = time;
     }
 }

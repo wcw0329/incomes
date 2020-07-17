@@ -1,13 +1,9 @@
 package com.muicc.incomes.controller;
 
 
-import com.muicc.incomes.dao.CreatedateDao;
-import com.muicc.incomes.dao.EmployerDao;
-import com.muicc.incomes.dao.WorkdayDao;
+import com.muicc.incomes.dao.*;
 import com.muicc.incomes.model.RequestWorkday;
-import com.muicc.incomes.pojo.Createdate;
-import com.muicc.incomes.pojo.Employer;
-import com.muicc.incomes.pojo.Workday;
+import com.muicc.incomes.pojo.*;
 import com.muicc.incomes.result.Result;
 import com.muicc.incomes.result.ResultFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,6 +23,12 @@ public class WorkdayController {
     EmployerDao employerDao;
     @Autowired
     CreatedateDao createdateDao;
+    @Autowired
+    AwaysDao awaysDao;
+    @Autowired
+    StayDao stayDao;
+    @Autowired
+    Userdefault1Dao userdefault1Dao;
 
     //按员工号查询出勤记录
     @CrossOrigin
@@ -136,6 +138,31 @@ public class WorkdayController {
                 message = String.format("该员工已存在该月份下的记录！");
                 return ResultFactory.buidResult(100,message,workdayByEidAndCdid);
             }else {
+                List<Stay> allStay = stayDao.getAllStay();
+                Userdefault1 userdefault1ByEid = userdefault1Dao.getUserdefault1ByEid(employer.getId());
+                Double t = allStay.get(0).getTime();//迟到早退时间限制
+                Double bei = allStay.get(0).getBei();//旷工扣款倍数
+                double regularpay = userdefault1ByEid.getRegularpay();//基本工资
+                Aways byEidAndCdid = awaysDao.getByEidAndCdid(employer.getId(), createdate.getId());
+                if(null==byEidAndCdid){
+                    if(absenteeism!=0&&late+leaveral>=t){
+                        double cutmoney = regularpay / 21.75 / 8 * bei *(absenteeism+late+leaveral);
+                        awaysDao.addAways(1,cutmoney,employer.getId(),createdate.getId(),1);
+                    }
+                    if(absenteeism!=0&&late+leaveral<t){
+                        double cutmoney = regularpay / 21.75 / 8 * bei * absenteeism;
+                        awaysDao.addAways(1,cutmoney,employer.getId(),createdate.getId(),1);
+                    }
+                }else{
+                    if(absenteeism!=0&&late+leaveral>=t){
+                        double cutmoney = regularpay / 21.75 / 8 * bei *(absenteeism+late+leaveral);
+                        awaysDao.updateAways(cutmoney,employer.getId(),createdate.getId());
+                    }
+                    if(absenteeism!=0&&late+leaveral<t){
+                        double cutmoney = regularpay / 21.75 / 8 * bei * absenteeism;
+                        awaysDao.updateAways(cutmoney,employer.getId(),createdate.getId());
+                    }
+                }
                 int i = workdayDao.addWorkday(employer.getId(), createdate.getId(), paidLeave, absence, overtimen, overtimed, absenteeism, late, lateTimes, leaveral, leaveralTimes);
                 if (i == 0) {
                     message = String.format("添加失败！");
@@ -143,11 +170,12 @@ public class WorkdayController {
                 } else {
                     return ResultFactory.buildSuccessResult(message, i);
                 }
+
             }
         }
     }
 
-    //按员工姓名和时间修改出勤记录
+    //按ID修改出勤记录
     @CrossOrigin
     @PostMapping("incomes/updateWorkday")
     @ResponseBody
@@ -163,7 +191,7 @@ public class WorkdayController {
         int lateTimes = requestWorkday.getLateTimes();
         double leaveral = requestWorkday.getLeaveral();
         int leaveralTimes = requestWorkday.getLeaveralTimes();
-         String message = String.format("修改成功！");
+        String message = String.format("修改成功！");
         Createdate createdate = createdateDao.getCreatedateByTime(time);
         if(null==createdate){
             message = String.format("员工姓名或时间不正确！");
@@ -174,6 +202,32 @@ public class WorkdayController {
                 message = String.format("修改失败！");
                 return ResultFactory.buildFailResult(message);
             } else {
+                Workday workdayById = workdayDao.getWorkdayById(id);
+                List<Stay> allStay = stayDao.getAllStay();
+                Userdefault1 userdefault1ByEid = userdefault1Dao.getUserdefault1ByEid(workdayById.getEid());
+                Double t = allStay.get(0).getTime();//迟到早退时间限制
+                Double bei = allStay.get(0).getBei();//旷工扣款倍数
+                double regularpay = userdefault1ByEid.getRegularpay();//基本工资
+                Aways byEidAndCdid = awaysDao.getByEidAndCdid(workdayById.getEid(), createdate.getId());
+                if(null==byEidAndCdid){
+                    if(absenteeism!=0&&late+leaveral>=t){
+                        double cutmoney = regularpay / 21.75 / 8 * bei *(absenteeism+late+leaveral);
+                        awaysDao.addAways(1,cutmoney,workdayById.getEid(),createdate.getId(),1);
+                    }
+                    if(absenteeism!=0&&late+leaveral<t){
+                        double cutmoney = regularpay / 21.75 / 8 * bei * absenteeism;
+                        awaysDao.addAways(1,cutmoney,workdayById.getEid(),createdate.getId(),1);
+                    }
+                }else{
+                    if(absenteeism!=0&&late+leaveral>=t){
+                        double cutmoney = regularpay / 21.75 / 8 * bei *(absenteeism+late+leaveral);
+                        awaysDao.updateAways(cutmoney,workdayById.getEid(),createdate.getId());
+                    }
+                    if(absenteeism!=0&&late+leaveral<t){
+                        double cutmoney = regularpay / 21.75 / 8 * bei * absenteeism;
+                        awaysDao.updateAways(cutmoney,workdayById.getEid(),createdate.getId());
+                    }
+                }
                 return ResultFactory.buildSuccessResult(message, i);
             }
         }
@@ -190,8 +244,10 @@ public class WorkdayController {
             message = String.format("删除失败！");
             return ResultFactory.buildFailResult(message);
         }
-            int i = workdayDao.deleteWorkday(id);
-            if(i==0){
+            Workday workdayById = workdayDao.getWorkdayById(id);
+            int i = awaysDao.deleteAways(workdayById.getEid(), workdayById.getCdid());
+            int j = workdayDao.deleteWorkday(id);
+            if(i==0||j==0){
                 message = String.format("删除失败！");
                 return ResultFactory.buildFailResult(message);
             }else{

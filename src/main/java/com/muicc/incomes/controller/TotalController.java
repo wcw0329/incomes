@@ -1,6 +1,5 @@
 package com.muicc.incomes.controller;
 
-
 import com.muicc.incomes.dao.*;
 import com.muicc.incomes.model.RequestTotal;
 import com.muicc.incomes.pojo.*;
@@ -9,8 +8,6 @@ import com.muicc.incomes.result.ResultFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
-
-import java.text.DecimalFormat;
 import java.util.*;
 
 @Controller
@@ -331,7 +328,7 @@ public class TotalController {
             int jj =userDao.addUser("旷工扣款",cutmoney,1,userobjectId);
             int kk =userDao.addUser("其他扣款",cutByEidAndCdid,1,userobjectId);
             int ll =userDao.addUser("代扣个税",taxx,1,userobjectId);
-            int mm =userDao.addUser("工资合计",sumpayable,1,userobjectId);
+            int mm =userDao.addUser("工资合计",c,1,userobjectId);
             if (aa == 0||bb==0||cc==0||dd==0||ee==0||ff==0||gg==0||hh==0||ii==0||jj==0||kk==0||ll==0||mm==0) {
                 message = String.format("月员工工资明细表!");
                 return ResultFactory.buildFailResult(message);
