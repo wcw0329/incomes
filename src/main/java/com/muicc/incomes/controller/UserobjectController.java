@@ -22,8 +22,6 @@ public class UserobjectController {
     @Autowired
     EmployerDao employerDao;
     @Autowired
-    TotalwageDao totalwageDao;
-    @Autowired
     TaxDao taxDao;
     @Autowired
     CreatedateDao createdateDao;
@@ -31,6 +29,8 @@ public class UserobjectController {
     WorkdayDao workdayDao;
     @Autowired
     AwaysDao awaysDao;
+    @Autowired
+    AttendanceDao attendanceDao;
 
     //查找所有的工资管理明细
     @CrossOrigin
@@ -49,6 +49,12 @@ public class UserobjectController {
             Employer employerById = employerDao.getEmployerById(userobject.getEid());
             map.put("name", employerById.getName());//姓名
             map.put("regularpay",userobject.getRegularpay());//基本工资
+            List<Attendance> allAttendance = attendanceDao.getAllAttendance();
+            if(allAttendance.size()>0){
+                map.put("attenceAwards",userobject.getAttenceAwards());//全勤奖
+            }else{
+                map.put("attenceAwards","---");//全勤奖
+            }
             map.put("work",userobject.getWork());//加班
             map.put("absence",userobject.getAbsence());//旷工
             map.put("holiday",userobject.getHoliday());//请假
@@ -93,6 +99,12 @@ public class UserobjectController {
             Employer employerById = employerDao.getEmployerById(userobject.getEid());
             map.put("name", employerById.getName());//姓名
             map.put("regularpay",userobject.getRegularpay());//基本工资
+            List<Attendance> allAttendance = attendanceDao.getAllAttendance();
+            if(allAttendance.size()>0){
+                map.put("attenceAwards",userobject.getAttenceAwards());//全勤奖
+            }else{
+                map.put("attenceAwards","---");//全勤奖
+            }
             map.put("overtime",userobject.getWork());//加班
             map.put("absence",userobject.getAbsence());//旷工
             map.put("holiday",userobject.getHoliday());//请假
@@ -101,7 +113,7 @@ public class UserobjectController {
             map.put("initialsum",userobject.getInitialsum());//工资合计
             map.put("insurance",userobject.getInsurance());//社保
             map.put("secondsum",userobject.getSecondsum());//应付金额
-            map.put("cut",userobject.getCut());//扣借款
+            map.put("cut",userobject.getCut());//扣款
             map.put("tax",userobject.getTax());//个税
             map.put("sumpayable",userobject.getSumpayable());//实发金额
             if(null==userobject.getNote()){

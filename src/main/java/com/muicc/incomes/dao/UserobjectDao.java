@@ -20,11 +20,14 @@ public interface UserobjectDao extends JpaRepository<Userobject,Integer> {
     @Query(value = "select id from userobject where eid = ?1 and cdid = ?2",nativeQuery = true)
     int getIdByEidAndCdid(int eid,int cdid);
 
+    @Query(value = "select IFNULL(sum(sumpayable+tax),0) from userobject where eid =?1 and cdid >= ?2 and cdid <= ?3",nativeQuery = true)
+    int getSumpayByCdid(int eid,int cdid1,int cdid2);
+
     @Transactional
     @Modifying
-    @Query(value = "insert into userobject(cdid, eid, regularpay, work, holiday, allowanceids, awards, absence, initialsum, insurance, secondsum, cut, tax, sumpayable, qianzhang, note) " +
-            "values (?1,?2,?3,?4,?5,?6,?7,?8,?9,?10,?11,?12,?13,?14,?15,?16) ",nativeQuery = true)
-    int addUserobject(int cdid,int eid,double regularpay,double work,double holiday,double allowanceids,double awards,
+    @Query(value = "insert into userobject(cdid, eid, regularpay, attence_awards,work, holiday, allowanceids, awards, absence, initialsum, insurance, secondsum, cut, tax, sumpayable, qianzhang, note) " +
+            "values (?1,?2,?3,?4,?5,?6,?7,?8,?9,?10,?11,?12,?13,?14,?15,?16,?17) ",nativeQuery = true)
+    int addUserobject(int cdid,int eid,double regularpay,double attenceAwards,double work,double holiday,double allowanceids,double awards,
                       double absence,double initialsum,double insurance,double secondsum,double cut,double tax,
                       double sumpayable,String qianzhang,String note);
 

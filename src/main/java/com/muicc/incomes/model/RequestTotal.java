@@ -5,9 +5,7 @@ import java.util.Date;
 
 public class RequestTotal {
 
-
     private String saltime;
-
 
     public String getSaltime() {
         return saltime;

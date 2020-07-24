@@ -8,6 +8,8 @@ import com.muicc.incomes.result.Result;
 import com.muicc.incomes.result.ResultFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.interceptor.TransactionAspectSupport;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpSession;
@@ -49,6 +51,7 @@ public class AttendanceController {
     @CrossOrigin
     @PostMapping(value = "incomes/updateAttendanceStatus")
     @ResponseBody
+    @Transactional
     public Result updateAttendanceStatus(@RequestBody RequestAttendance requestAttendance) {
         String message = String.format("全勤奖设置更改成功！");
         int status = 0;
@@ -57,18 +60,18 @@ public class AttendanceController {
         }
         int i = attendanceDao.updateAttendanceStatus(status);
         if(i==0){
-            message = String.format("全勤奖设置更改失败！");
+            message = String.format("更改失败！错误代码440");
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             return ResultFactory.buildFailResult(message);
-        }else{
-            return ResultFactory.buildSuccessResult(message,i);
         }
-
+        return ResultFactory.buildSuccessResult(message,i);
     }
 
     //添加考勤规则信息
     @CrossOrigin
     @PostMapping("incomes/addAttendance")
     @ResponseBody
+    @Transactional
     public Result addAttendance(@RequestBody Attendance requestAttendance) {
         String message = String.format("添加成功！");
         String name ="全勤奖";
@@ -76,19 +79,24 @@ public class AttendanceController {
         int times = requestAttendance.getTimes();
         double rate = requestAttendance.getRate();
         double fixed_award = requestAttendance.getFixedAward();
+        if(0.0==time||0==times||0.0==rate||0.0==fixed_award){
+            message = String.format("信息填写错误！");
+            return ResultFactory.buildFailResult(message);
+        }
         int i = attendanceDao.addAttendance(name,time,times,rate,fixed_award);
         if(i==0){
-            message = String.format("添加失败！");
+            message = String.format("添加失败！错误代码440");
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             return ResultFactory.buildFailResult(message);
-        }else{
-            return ResultFactory.buildSuccessResult(message,i);
         }
+        return ResultFactory.buildSuccessResult(message,i);
     }
 
     //修改考勤规则信息
     @CrossOrigin
     @PostMapping("incomes/updateAttendance")
     @ResponseBody
+    @Transactional
     public Result updateAttendance(@RequestBody Attendance requestAttendance) {
         String message = String.format("添加成功！");
         int id = requestAttendance.getId();//ID
@@ -96,19 +104,24 @@ public class AttendanceController {
         int times = requestAttendance.getTimes();
         double rate = requestAttendance.getRate();
         double fixed_award = requestAttendance.getFixedAward();
+        if(0.0==time||0==times||0.0==rate||0.0==fixed_award){
+            message = String.format("信息填写错误！");
+            return ResultFactory.buildFailResult(message);
+        }
         int i = attendanceDao.updateAttendance(id,time,times,rate,fixed_award);
         if(i==0){
-            message = String.format("添加失败！");
+            message = String.format("修改失败！错误代码440");
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             return ResultFactory.buildFailResult(message);
-        }else{
-            return ResultFactory.buildSuccessResult(message,i);
         }
+        return ResultFactory.buildSuccessResult(message,i);
     }
 
     //按ID删除考勤规则信息
     @CrossOrigin
     @PostMapping("incomes/deleteAttendance")
     @ResponseBody
+    @Transactional
     public Result deleteAttendance(@RequestBody Attendance requestAttendance) {
         String message = String.format("删除成功！");
         int id = requestAttendance.getId();//ID
@@ -118,10 +131,10 @@ public class AttendanceController {
         }
         int i = attendanceDao.deleteAttendance(id);
         if(i==0){
-            message = String.format("删除失败！");
+            message = String.format("删除失败！错误代码440");
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             return ResultFactory.buildFailResult(message);
-        }else{
-            return ResultFactory.buildSuccessResult(message,i);
         }
+        return ResultFactory.buildSuccessResult(message,i);
     }
 }

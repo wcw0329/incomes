@@ -16,6 +16,11 @@ public interface UpdatedateDao extends JpaRepository<Updatedate,Integer> {
     @Query(value = "select * from updatedate where updatedate = ?1 ",nativeQuery = true)
     Updatedate getUpdatedateByDate(Date updatedate);
 
+    @Transactional
+    @Modifying
+    @Query(value = "update updatedate set updatedate =?1 ",nativeQuery = true)
+    int updateUpdatedate(Date updatedate);
+
     @Query(value = "select max(id) from updatedate",nativeQuery = true)
     Integer getLastId();
 

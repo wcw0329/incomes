@@ -14,6 +14,9 @@ public interface TempoDao extends JpaRepository<Tempo,Integer> {
     @Query(value = "select * from tempo where cdid = ?1",nativeQuery = true)
     List<Tempo> getTempoByCdid(int cdid);
 
+    @Query(value = "select sum(sumpayable) from tempo where cdid = ?1",nativeQuery = true)
+    double getSumByCdid(int cdid);
+
     @Query(value = "select * from tempo where cdid = ?1 and name =?2",nativeQuery = true)
     Tempo getTempoByCdidAndName(int cdid,String name);
 

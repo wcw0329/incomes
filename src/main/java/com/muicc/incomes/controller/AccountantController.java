@@ -6,6 +6,8 @@ import com.muicc.incomes.result.Result;
 import com.muicc.incomes.result.ResultFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.interceptor.TransactionAspectSupport;
 import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpSession;
 import java.util.ArrayList;
@@ -37,6 +39,7 @@ public class AccountantController {
     @CrossOrigin
     @PostMapping(value = "incomes/aLogin")
     @ResponseBody
+    @Transactional
     public Result login(@RequestBody Accountant requestAccountant, HttpSession session) {
         String message = String.format("登陆成功！");
         String name = requestAccountant.getName();
@@ -45,11 +48,15 @@ public class AccountantController {
             message = String.format("登陆失败！");
             return ResultFactory.buildFailResult(message);
         }
-
         List<Accountant> allAccountant = accountantDao.getAllAccountant();
         if(allAccountant.size()==0){
             message = String.format("管理员账号注册成功！");
             int i = accountantDao.addAccountant(name, password);
+            if(i==0){
+                message = String.format("注册失败！错误代码440");
+                TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+                return ResultFactory.buildFailResult(message);
+            }
             Accountant accountant = accountantDao.getAccountantByNameAndPassword(name,password);
             session.setAttribute("accountant", accountant);
             return ResultFactory.buidResult(100,message,accountant);
@@ -91,63 +98,89 @@ public class AccountantController {
     @CrossOrigin
     @PostMapping("incomes/addAccountant")
     @ResponseBody
+    @Transactional
     public Result addAccountant(@RequestBody Accountant requestAccountant) {
-        String name =requestAccountant.getName();//账号
-        String password = requestAccountant.getPassword();//密码
-        String message = String.format("添加成功！");
-        if (null == name || null == password) {
-            message = String.format("添加失败！");
+            String name =requestAccountant.getName();//账号
+            String password = requestAccountant.getPassword();//密码
+            String message = String.format("添加成功！");
+            if (null == name||name.equals("")) {
+                message = String.format("账号不能为空！");
+                return ResultFactory.buildFailResult(message);
+            }
+            if (password.length()<6) {
+            message = String.format("密码长度不足6位！");
             return ResultFactory.buildFailResult(message);
-        }
+            }
             int i = accountantDao.addAccountant(name,password);
             if(i==0){
-                message = String.format("添加失败！");
+                message = String.format("添加失败！错误代码441");
+                TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
                 return ResultFactory.buildFailResult(message);
-            }else{
-                return ResultFactory.buildSuccessResult(message,i);
             }
+            return ResultFactory.buildSuccessResult(message,i);
     }
 
     //按管理员账号修改管理员信息
     @CrossOrigin
     @PostMapping("incomes/updateAccountant")
     @ResponseBody
+    @Transactional
     public Result updateAccountant(@RequestBody Accountant requestAccountant) {
         String name =requestAccountant.getName();//账号
         String password = requestAccountant.getPassword();//密码
         int id = requestAccountant.getId();//ID
         String message = String.format("修改成功！");
-        if (null == name || null == password || 0 == id) {
-            message = String.format("修改失败！");
+        if (null == name||name.equals("")) {
+            message = String.format("账号不能为空！");
             return ResultFactory.buildFailResult(message);
         }
-            int i = accountantDao.updateAccountant(name,password,id);
-            if(i==0){
-                message = String.format("修改失败！");
-                return ResultFactory.buildFailResult(message);
-            }else{
-                return ResultFactory.buildSuccessResult(message,i);
-            }
+        if (password.length()<6) {
+            message = String.format("密码长度不足6位！");
+            return ResultFactory.buildFailResult(message);
+        }
+        if (0 == id) {
+            message = String.format("修改失败！错误代码440");
+            return ResultFactory.buildFailResult(message);
+        }
+        int i = accountantDao.updateAccountant(name,password,id);
+        if(i==0){
+            message = String.format("修改失败！错误代码442");
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+            return ResultFactory.buildFailResult(message);
+        }
+        return ResultFactory.buildSuccessResult(message,i);
     }
 
     //按管理员账号删除管理员信息
     @CrossOrigin
     @PostMapping("incomes/deleteAccountant")
     @ResponseBody
+    @Transactional
     public Result deleteAccountant(@RequestBody Accountant requestAccountant) {
         String message = String.format("删除成功！");
         int id = requestAccountant.getId();//ID
         if (0 == id) {
-            message = String.format("删除失败！");
+            message = String.format("删除失败！错误代码440");
             return ResultFactory.buildFailResult(message);
         }
-            int i = accountantDao.deleteAccountant(id);
-            if(i==0){
-                message = String.format("删除失败！");
-                return ResultFactory.buildFailResult(message);
-            }else{
-                return ResultFactory.buildSuccessResult(message,i);
-            }
+        int i = accountantDao.deleteAccountant(id);
+        if(i==0){
+            message = String.format("删除失败！错误代码443");
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+            return ResultFactory.buildFailResult(message);
+        }
+        return ResultFactory.buildSuccessResult(message,i);
+    }
+
+    //按ID获取账号名
+    @CrossOrigin
+    @PostMapping(value = "incomes/getAccountantIdByName")
+    @ResponseBody
+    public Result getAccountantIdByName(@RequestBody Accountant requestAccountant) {
+        String message = String.format("查找成功！");
+        String name = requestAccountant.getName();//账号名称
+        int id = accountantDao.getIdByName(name);
+        return ResultFactory.buildSuccessResult(message, id);
     }
 
 }

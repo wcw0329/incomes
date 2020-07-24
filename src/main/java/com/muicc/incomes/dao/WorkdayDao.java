@@ -12,7 +12,7 @@ public interface WorkdayDao extends JpaRepository<Workday,Integer> {
     @Query(value = "select * from workday where eid = ?1 order by cdid desc",nativeQuery = true)
     List<Workday> getWorkdayByEid(int eid);
 
-    @Query(value = "select * from workday order by cdid desc",nativeQuery = true)
+    @Query(value = "select * from workday order by cdid desc, eid asc",nativeQuery = true)
     List<Workday> getAllWorkday();
 
     @Query(value = "select * from workday where cdid = ?1",nativeQuery = true)

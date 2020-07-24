@@ -17,18 +17,11 @@ public interface InsurancerateDao extends JpaRepository<Insurancerate,Integer> {
     @Query(value = "select * from insurancerate where status = 1 and eid= ?1",nativeQuery = true)
     Insurancerate getInsurancerateByEid(int eid);
 
-    @Query(value = "select * from insurancerate where status = 1 and id= ?1",nativeQuery = true)
-    Insurancerate getInsurancerateById(int id);
-
     @Transactional
     @Modifying
     @Query(value = "insert into insurancerate(eid,insurancerate,fixedfee,updatedate,status) values (?1,?2,?3,?4,1) ",nativeQuery = true)
     int addInsurancerate(int eid, double insurancerate, double fixedfee, Date updatedate);
 
-    @Transactional
-    @Modifying
-    @Query(value = "insert into insurancerate(eid,insurancerate,fixedfee,updatedate,status) values (?1,?2,?3,NOW(),1) ",nativeQuery = true)
-    int addInsurancerate1(int eid, double insurancerate, double fixedfee);
 
     @Transactional
     @Modifying

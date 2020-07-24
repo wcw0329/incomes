@@ -12,7 +12,7 @@ public class Allowance implements Serializable {
     private double allowance;
     private int eid;
     private int cdid;
-
+    private int status;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
@@ -62,5 +62,15 @@ public class Allowance implements Serializable {
 
     public void setCdid(int cdid) {
         this.cdid = cdid;
+    }
+
+    @Basic
+    @Column(name = "status")
+    public int getStatus() {
+        return status;
+    }
+
+    public void setStatus(int status) {
+        this.status = status;
     }
 }

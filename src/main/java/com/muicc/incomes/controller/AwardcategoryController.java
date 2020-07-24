@@ -7,6 +7,8 @@ import com.muicc.incomes.result.Result;
 import com.muicc.incomes.result.ResultFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.interceptor.TransactionAspectSupport;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
@@ -52,49 +54,52 @@ public class AwardcategoryController {
     @CrossOrigin
     @PostMapping("incomes/addAwardcategory")
     @ResponseBody
+    @Transactional
     public Result addAwardcategory(@RequestBody Awardcategory requestAwardcategory) {
         String name =requestAwardcategory.getName();//奖金名称
         int shown =requestAwardcategory.getShown();//是否显示在工资表
         String message = String.format("添加成功！");
-        if (null == name) {
-            message = String.format("添加失败！");
+        if (null == name||name.equals("")) {
+            message = String.format("添加奖金种类名称不能为空！");
             return ResultFactory.buildFailResult(message);
         }
         int i = awardcategoryDao.addAwardcategory(name,shown);
         if(i==0){
-            message = String.format("添加失败！");
+            message = String.format("添加失败！错误代码440");
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             return ResultFactory.buildFailResult(message);
-        }else{
-            return ResultFactory.buildSuccessResult(message,i);
         }
+        return ResultFactory.buildSuccessResult(message,i);
     }
 
     //按ID修改奖金种类信息
     @CrossOrigin
     @PostMapping("incomes/updateAwardcategory")
     @ResponseBody
+    @Transactional
     public Result updateAwardcategory(@RequestBody Awardcategory requestAwardcategory) {
         int id =requestAwardcategory.getId();//ID
         String name =requestAwardcategory.getName();//奖金名称
         int shown =requestAwardcategory.getShown();//是否显示在工资表
         String message = String.format("修改成功！");
-        if (null == name || 0 == id ) {
-            message = String.format("修改失败！");
+        if (null == name ||name.equals("")) {
+            message = String.format("修改奖金种类名称不能为空");
             return ResultFactory.buildFailResult(message);
         }
         int i = awardcategoryDao.updateAwardcategory(name,shown,id);
         if(i==0){
-            message = String.format("修改失败！");
+            message = String.format("修改失败！错误代码440");
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             return ResultFactory.buildFailResult(message);
-        }else{
-            return ResultFactory.buildSuccessResult(message,i);
         }
+        return ResultFactory.buildSuccessResult(message,i);
     }
 
     //按ID删除奖金种类信息（假删除）
     @CrossOrigin
     @PostMapping("incomes/deleteAwardcategory")
     @ResponseBody
+    @Transactional
     public Result deleteAwardcategory(@RequestBody Awardcategory requestAwardcategory) {
         int id =requestAwardcategory.getId();//ID
         String message = String.format("删除成功！");
@@ -104,11 +109,11 @@ public class AwardcategoryController {
         }
         int i = awardcategoryDao.deleteAwardcategory(id);
         if(i==0){
-            message = String.format("删除失败！");
+            message = String.format("删除失败！错误代码440");
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             return ResultFactory.buildFailResult(message);
-        }else{
-            return ResultFactory.buildSuccessResult(message,i);
         }
+        return ResultFactory.buildSuccessResult(message,i);
     }
 
 }

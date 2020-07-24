@@ -5,7 +5,7 @@ import java.io.Serializable;
 import java.util.Objects;
 
 
-public class RequestAllowance implements Serializable {
+public class RequestAllowance {
     private int id;
     private int alcid;
     private String ename;
@@ -14,6 +14,7 @@ public class RequestAllowance implements Serializable {
     private int eid;
     private String time;
     private int cdid;
+    private int status;
 
 
     public int getId() {
@@ -82,5 +83,12 @@ public class RequestAllowance implements Serializable {
 
     public void setCdid(int cdid) {
         this.cdid = cdid;
+    }
+    public int getStatus() {
+        return status;
+    }
+
+    public void setStatus(int status) {
+        this.status = status;
     }
 }

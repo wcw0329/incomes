@@ -15,21 +15,29 @@ public interface AllowanceDao extends JpaRepository<Allowance,Integer> {
     @Query(value = "select * from allowance order by cdid desc,eid asc",nativeQuery = true)
     List<Allowance> getAllAllowance();
 
+    @Query(value = "select * from allowance where cdid =?1",nativeQuery = true)
+    List<Allowance> getAllowanceByCdid(int cdid);
+
     @Query(value = "select * from allowance where eid = ?1 and cdid =?2",nativeQuery = true)
-    Allowance getByEidAndCdid(int eid,int cdid);
+    List<Allowance> getByEidAndCdid(int eid,int cdid);
 
     @Query(value = "select sum(allowance) from allowance where eid = ?1 and cdid =?2",nativeQuery = true)
     double getAllowanceByEidAndCdid(int eid,int cdid);
 
     @Transactional
     @Modifying
-    @Query(value = "insert into allowance(alcid, allowance, eid,cdid ) values (?1,?2,?3,?4) ",nativeQuery = true)
+    @Query(value = "insert into allowance(alcid, allowance, eid,cdid ,status) values (?1,?2,?3,?4,1) ",nativeQuery = true)
     int addAllowance(int alcid,double allowance,int eid,int cdid);
 
     @Transactional
     @Modifying
     @Query(value = "update allowance set alcid =?2, allowance =?3,eid =?4,cdid =?5 where id = ?1 ",nativeQuery = true)
     int updateAllowance(int id,int alcid,double allowance,int eid,int cdid);
+
+    @Transactional
+    @Modifying
+    @Query(value = "update allowance set status = ?1 where cdid = ?2 ",nativeQuery = true)
+    int updateAllowanceStatus(int status,int cdid);
 
     @Transactional
     @Modifying

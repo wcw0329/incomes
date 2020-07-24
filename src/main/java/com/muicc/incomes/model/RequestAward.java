@@ -3,7 +3,7 @@ package com.muicc.incomes.model;
 import javax.persistence.*;
 import java.io.Serializable;
 
-public class RequestAward implements Serializable {
+public class RequestAward {
     private int id;
     private int acid;
     private String acname;
@@ -12,6 +12,7 @@ public class RequestAward implements Serializable {
     private String ename;
     private int cdid;
     private String time;
+    private int status;
 
 
     public int getId() {
@@ -78,5 +79,13 @@ public class RequestAward implements Serializable {
 
     public void setTime(String time) {
         this.time = time;
+    }
+
+    public int getStatus() {
+        return status;
+    }
+
+    public void setStatus(int status) {
+        this.status = status;
     }
 }

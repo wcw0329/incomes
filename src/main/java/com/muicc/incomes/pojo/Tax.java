@@ -9,7 +9,8 @@ import java.util.Objects;
 public class Tax implements Serializable {
     private int id;
     private double tax;
-    private int trupdid;
+    private int eid;
+    private int cdid;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -33,27 +34,22 @@ public class Tax implements Serializable {
     }
 
     @Basic
-    @Column(name = "trupdid")
-    public int getTrupdid() {
-        return trupdid;
+    @Column(name = "eid")
+    public int getEid() {
+        return eid;
     }
 
-    public void setTrupdid(int trupdid) {
-        this.trupdid = trupdid;
+    public void setEid(int eid) {
+        this.eid = eid;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Tax tax1 = (Tax) o;
-        return id == tax1.id &&
-                Double.compare(tax1.tax, tax) == 0 &&
-                trupdid == tax1.trupdid;
+    @Basic
+    @Column(name = "cdid")
+    public int getCdid() {
+        return cdid;
     }
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(id, tax, trupdid);
+    public void setCdid(int cdid) {
+        this.cdid = cdid;
     }
 }

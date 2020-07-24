@@ -5,7 +5,7 @@ import java.io.Serializable;
 import java.util.Objects;
 
 
-public class RequestCut implements Serializable {
+public class RequestCut{
     private int id;
     private int ccid;
     private String ename;
@@ -14,6 +14,7 @@ public class RequestCut implements Serializable {
     private int eid;
     private String time;
     private int cdid;
+    private int status;
 
     public int getId() {
         return id;
@@ -80,6 +81,13 @@ public class RequestCut implements Serializable {
 
     public void setCdid(int cdid) {
         this.cdid = cdid;
+    }
+    public int getStatus() {
+        return status;
+    }
+
+    public void setStatus(int status) {
+        this.status = status;
     }
 
 }

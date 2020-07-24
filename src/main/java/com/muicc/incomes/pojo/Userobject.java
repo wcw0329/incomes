@@ -10,6 +10,7 @@ public class Userobject {
     private int eid;
     private int cdid;
     private double regularpay;
+    private double attenceAwards;
     private double work;
     private double holiday;
     private double allowanceids;
@@ -61,6 +62,16 @@ public class Userobject {
 
     public void setRegularpay(double regularpay) {
         this.regularpay = regularpay;
+    }
+
+    @Basic
+    @Column(name = "attenceAwards")
+    public double getAttenceAwards() {
+        return attenceAwards;
+    }
+
+    public void setAttenceAwards(double attenceAwards) {
+        this.attenceAwards = attenceAwards;
     }
 
     @Basic

@@ -8,6 +8,8 @@ import com.muicc.incomes.result.Result;
 import com.muicc.incomes.result.ResultFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.interceptor.TransactionAspectSupport;
 import org.springframework.web.bind.annotation.*;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -83,7 +85,11 @@ public class WorkdayController {
             map.put("eid", workday.getEid());//员工号
             map.put("cdid", workday.getCdid());
             map.put("time", createdateDao.getCreatedateByCdid(workday.getCdid()).getName());//时间
-            map.put("name", employerDao.getEmployerById(workday.getEid()).getName());//员工姓名
+            Employer employerById = employerDao.getEmployerById(workday.getEid());
+            if(null==employerById){
+                continue;
+            }
+            map.put("name", employerById.getName());//员工姓名
             map.put("absence", workday.getAbsence());//无薪请假
             map.put("paidLeave", workday.getPaidLeave());//带薪请假
             map.put("overtimen", workday.getOvertimen());//普通加班
@@ -110,9 +116,19 @@ public class WorkdayController {
     @CrossOrigin
     @PostMapping("incomes/addWorkday")
     @ResponseBody
+    @Transactional
     public Result addWorkday(@RequestBody RequestWorkday requestWorkday) {
+        String message = String.format("添加成功！");
         String name = requestWorkday.getName();
+        if (null == name ||name.equals("")) {
+            message = String.format("员工姓名不能为空！");
+            return ResultFactory.buildFailResult(message);
+        }
         String time = requestWorkday.getTime();
+        if (null == time ||time.equals("")) {
+            message = String.format("时间不能为空！");
+            return ResultFactory.buildFailResult(message);
+        }
         double absence = requestWorkday.getAbsence();
         double paidLeave = requestWorkday.getPaidLeave();
         double overtimen = requestWorkday.getOvertimen();
@@ -122,66 +138,63 @@ public class WorkdayController {
         int lateTimes = requestWorkday.getLateTimes();
         double leaveral = requestWorkday.getLeaveral();
         int leaveralTimes = requestWorkday.getLeaveralTimes();
-        String message = String.format("添加成功！");
-        if (null == name || null == time) {
-            message = String.format("添加失败！");
-            return ResultFactory.buildFailResult(message);
-        }
         Employer employer = employerDao.getEmployerByName(name);
         Createdate createdate = createdateDao.getCreatedateByTime(time);
-        if(null==employer||null==createdate){
-            message = String.format("员工姓名或时间不正确！");
+        Workday workdayByEidAndCdid = workdayDao.getWorkdayByEidAndCdid(employer.getId(), createdate.getId());
+        if(workdayByEidAndCdid!=null){
+            message = String.format("该员工已存在该月份下的记录！");
             return ResultFactory.buildFailResult(message);
-        }else{
-            Workday workdayByEidAndCdid = workdayDao.getWorkdayByEidAndCdid(employer.getId(), createdate.getId());
-            if(workdayByEidAndCdid!=null){
-                message = String.format("该员工已存在该月份下的记录！");
-                return ResultFactory.buidResult(100,message,workdayByEidAndCdid);
-            }else {
-                List<Stay> allStay = stayDao.getAllStay();
-                Userdefault1 userdefault1ByEid = userdefault1Dao.getUserdefault1ByEid(employer.getId());
-                Double t = allStay.get(0).getTime();//迟到早退时间限制
-                Double bei = allStay.get(0).getBei();//旷工扣款倍数
-                double regularpay = userdefault1ByEid.getRegularpay();//基本工资
-                Aways byEidAndCdid = awaysDao.getByEidAndCdid(employer.getId(), createdate.getId());
-                if(null==byEidAndCdid){
-                    if(absenteeism!=0&&late+leaveral>=t){
-                        double cutmoney = regularpay / 21.75 / 8 * bei *(absenteeism+late+leaveral);
-                        awaysDao.addAways(1,cutmoney,employer.getId(),createdate.getId(),1);
-                    }
-                    if(absenteeism!=0&&late+leaveral<t){
-                        double cutmoney = regularpay / 21.75 / 8 * bei * absenteeism;
-                        awaysDao.addAways(1,cutmoney,employer.getId(),createdate.getId(),1);
-                    }
-                }else{
-                    if(absenteeism!=0&&late+leaveral>=t){
-                        double cutmoney = regularpay / 21.75 / 8 * bei *(absenteeism+late+leaveral);
-                        awaysDao.updateAways(cutmoney,employer.getId(),createdate.getId());
-                    }
-                    if(absenteeism!=0&&late+leaveral<t){
-                        double cutmoney = regularpay / 21.75 / 8 * bei * absenteeism;
-                        awaysDao.updateAways(cutmoney,employer.getId(),createdate.getId());
-                    }
-                }
-                int i = workdayDao.addWorkday(employer.getId(), createdate.getId(), paidLeave, absence, overtimen, overtimed, absenteeism, late, lateTimes, leaveral, leaveralTimes);
-                if (i == 0) {
-                    message = String.format("添加失败！");
-                    return ResultFactory.buildFailResult(message);
-                } else {
-                    return ResultFactory.buildSuccessResult(message, i);
-                }
-
+        }
+        List<Stay> allStay = stayDao.getAllStay();
+        Userdefault1 userdefault1ByEid = userdefault1Dao.getUserdefault1ByEid(employer.getId());
+        Double t = allStay.get(0).getTime();//迟到早退时间限制
+        Double bei = allStay.get(0).getBei();//旷工扣款倍数
+        double regularpay = userdefault1ByEid.getRegularpay();//基本工资
+        if(absenteeism!=0&&late+leaveral>=t){
+            double cutmoney = regularpay / 21.75 / 8 * bei *(absenteeism+late+leaveral);
+            int j = awaysDao.addAways(1, cutmoney, employer.getId(), createdate.getId(), 1);
+            if (j == 0) {
+                message = String.format("添加失败！错误代码441");
+                TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+                return ResultFactory.buildFailResult(message);
             }
         }
+        if(absenteeism!=0&&late+leaveral<t){
+            double cutmoney = regularpay / 21.75 / 8 * bei * absenteeism;
+            int j = awaysDao.addAways(1,cutmoney,employer.getId(),createdate.getId(),1);
+            if (j == 0) {
+                message = String.format("添加失败！错误代码442");
+                TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+                return ResultFactory.buildFailResult(message);
+            }
+        }
+        int i = workdayDao.addWorkday(employer.getId(), createdate.getId(), paidLeave, absence, overtimen, overtimed, absenteeism, late, lateTimes, leaveral, leaveralTimes);
+        if (i == 0) {
+            message = String.format("添加失败！错误代码440");
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+            return ResultFactory.buildFailResult(message);
+        }
+        return ResultFactory.buildSuccessResult(message, i);
     }
 
     //按ID修改出勤记录
     @CrossOrigin
     @PostMapping("incomes/updateWorkday")
     @ResponseBody
+    @Transactional
     public Result updateWorkday(@RequestBody RequestWorkday requestWorkday) {
+        String message = String.format("修改成功！");
         int id = requestWorkday.getId();
+        String name = requestWorkday.getName();
+        if (null == name ||name.equals("")) {
+            message = String.format("员工姓名不能为空！");
+            return ResultFactory.buildFailResult(message);
+        }
         String time = requestWorkday.getTime();
+        if (null == time ||time.equals("")) {
+            message = String.format("时间不能为空！");
+            return ResultFactory.buildFailResult(message);
+        }
         double absence = requestWorkday.getAbsence();
         double paidLeave = requestWorkday.getPaidLeave();
         double overtimen = requestWorkday.getOvertimen();
@@ -191,52 +204,60 @@ public class WorkdayController {
         int lateTimes = requestWorkday.getLateTimes();
         double leaveral = requestWorkday.getLeaveral();
         int leaveralTimes = requestWorkday.getLeaveralTimes();
-        String message = String.format("修改成功！");
         Createdate createdate = createdateDao.getCreatedateByTime(time);
-        if(null==createdate){
-            message = String.format("员工姓名或时间不正确！");
+        Employer employer = employerDao.getEmployerByName(name);
+        Workday workdayByEidAndCdid = workdayDao.getWorkdayByEidAndCdid(employer.getId(), createdate.getId());
+        if(workdayByEidAndCdid!=null&&workdayByEidAndCdid.getId()!=id){
+            message = String.format("该员工已存在该月份下的记录！");
             return ResultFactory.buildFailResult(message);
-        }else {
-            int i = workdayDao.updateWorkday(id,paidLeave, absence, overtimen, overtimed, absenteeism, late,lateTimes, leaveral,leaveralTimes,createdate.getId());
-            if (i == 0) {
-                message = String.format("修改失败！");
+        }
+        Workday workdayById = workdayDao.getWorkdayById(id);
+        Aways awaysByEidAndCdid = awaysDao.getByEidAndCdid(workdayById.getEid(), workdayById.getCdid());
+        if(awaysByEidAndCdid!=null){
+            int k = awaysDao.deleteAways(workdayById.getEid(), workdayById.getCdid());
+            if (k == 0) {
+                message = String.format("修改失败！错误代码440");
+                TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
                 return ResultFactory.buildFailResult(message);
-            } else {
-                Workday workdayById = workdayDao.getWorkdayById(id);
-                List<Stay> allStay = stayDao.getAllStay();
-                Userdefault1 userdefault1ByEid = userdefault1Dao.getUserdefault1ByEid(workdayById.getEid());
-                Double t = allStay.get(0).getTime();//迟到早退时间限制
-                Double bei = allStay.get(0).getBei();//旷工扣款倍数
-                double regularpay = userdefault1ByEid.getRegularpay();//基本工资
-                Aways byEidAndCdid = awaysDao.getByEidAndCdid(workdayById.getEid(), createdate.getId());
-                if(null==byEidAndCdid){
-                    if(absenteeism!=0&&late+leaveral>=t){
-                        double cutmoney = regularpay / 21.75 / 8 * bei *(absenteeism+late+leaveral);
-                        awaysDao.addAways(1,cutmoney,workdayById.getEid(),createdate.getId(),1);
-                    }
-                    if(absenteeism!=0&&late+leaveral<t){
-                        double cutmoney = regularpay / 21.75 / 8 * bei * absenteeism;
-                        awaysDao.addAways(1,cutmoney,workdayById.getEid(),createdate.getId(),1);
-                    }
-                }else{
-                    if(absenteeism!=0&&late+leaveral>=t){
-                        double cutmoney = regularpay / 21.75 / 8 * bei *(absenteeism+late+leaveral);
-                        awaysDao.updateAways(cutmoney,workdayById.getEid(),createdate.getId());
-                    }
-                    if(absenteeism!=0&&late+leaveral<t){
-                        double cutmoney = regularpay / 21.75 / 8 * bei * absenteeism;
-                        awaysDao.updateAways(cutmoney,workdayById.getEid(),createdate.getId());
-                    }
-                }
-                return ResultFactory.buildSuccessResult(message, i);
             }
         }
+        List<Stay> allStay = stayDao.getAllStay();
+        Userdefault1 userdefault1ByEid = userdefault1Dao.getUserdefault1ByEid(workdayById.getEid());
+        Double t = allStay.get(0).getTime();//迟到早退时间限制
+        Double bei = allStay.get(0).getBei();//旷工扣款倍数
+        double regularpay = userdefault1ByEid.getRegularpay();//基本工资
+        if(absenteeism!=0&&late+leaveral>=t){
+            double cutmoney = regularpay / 21.75 / 8 * bei *(absenteeism+late+leaveral);
+            int j = awaysDao.addAways(1,cutmoney,workdayById.getEid(),createdate.getId(),1);
+            if (j == 0) {
+                message = String.format("修改失败！错误代码441");
+                TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+                return ResultFactory.buildFailResult(message);
+            }
+        }
+        if(absenteeism!=0&&late+leaveral<t){
+            double cutmoney = regularpay / 21.75 / 8 * bei * absenteeism;
+            int j = awaysDao.addAways(1,cutmoney,workdayById.getEid(),createdate.getId(),1);
+            if (j == 0) {
+                message = String.format("修改失败！错误代码442");
+                TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+                return ResultFactory.buildFailResult(message);
+            }
+        }
+        int i = workdayDao.updateWorkday(id,paidLeave, absence, overtimen, overtimed, absenteeism, late,lateTimes, leaveral,leaveralTimes,createdate.getId());
+        if (i == 0) {
+            message = String.format("修改失败！错误代码443");
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+            return ResultFactory.buildFailResult(message);
+        }
+        return ResultFactory.buildSuccessResult(message, i);
      }
 
     //按ID删除出勤记录
     @CrossOrigin
     @PostMapping("incomes/deleteWorkday")
     @ResponseBody
+    @Transactional
     public Result deleteWorkday(@RequestBody RequestWorkday requestWorkday) {
         String message = String.format("删除成功！");
         Integer id = requestWorkday.getId();
@@ -244,15 +265,20 @@ public class WorkdayController {
             message = String.format("删除失败！");
             return ResultFactory.buildFailResult(message);
         }
-            Workday workdayById = workdayDao.getWorkdayById(id);
-            int i = awaysDao.deleteAways(workdayById.getEid(), workdayById.getCdid());
-            int j = workdayDao.deleteWorkday(id);
-            if(i==0||j==0){
-                message = String.format("删除失败！");
-                return ResultFactory.buildFailResult(message);
-            }else{
-                return ResultFactory.buildSuccessResult(message,i);
-            }
+        Workday workdayById = workdayDao.getWorkdayById(id);
+        int i = awaysDao.deleteAways(workdayById.getEid(), workdayById.getCdid());
+        if(i==0){
+            message = String.format("删除失败！错误代码440");
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+            return ResultFactory.buildFailResult(message);
+        }
+        int j = workdayDao.deleteWorkday(id);
+        if(j==0){
+            message = String.format("删除失败！错误代码441");
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+            return ResultFactory.buildFailResult(message);
+        }
+        return ResultFactory.buildSuccessResult(message,i);
     }
 
 }

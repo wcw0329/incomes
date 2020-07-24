@@ -27,12 +27,17 @@ public interface SumDao extends JpaRepository<Sum,Integer> {
 
     @Transactional
     @Modifying
-    @Query(value = "update sum set sum1 =sum1+?2 where cdid = ?1 ",nativeQuery = true)
+    @Query(value = "update sum set sum1 =?2 where cdid = ?1 ",nativeQuery = true)
     int updateSum(int cdid,double sum);
 
     @Transactional
     @Modifying
     @Query(value = "delete from sum where id = ?1 ",nativeQuery = true)
     int deleteSum(int id);
+
+    @Transactional
+    @Modifying
+    @Query(value = "delete from sum where cdid = ?1 ",nativeQuery = true)
+    int deleteSumByCdid(int cdid);
 
 }

@@ -5,6 +5,8 @@ import com.muicc.incomes.result.Result;
 import com.muicc.incomes.result.ResultFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.interceptor.TransactionAspectSupport;
 import org.springframework.web.bind.annotation.*;
 import java.util.HashMap;
 import javax.servlet.http.HttpSession;
@@ -79,17 +81,19 @@ public class EmployerController {
     @CrossOrigin
     @PostMapping("incomes/addEmployer")
     @ResponseBody
+    @Transactional
     public Result addEmployer(@RequestBody Employer requestEmployer) {
         int id =requestEmployer.getId();//工号
         String name =requestEmployer.getName();//姓名
         String message = String.format("添加成功！");
-        if (null == name || 0 == id) {
-            message = String.format("添加失败！");
+        if (null == name ||name.equals("")) {
+            message = String.format("员工姓名不能为空！");
             return ResultFactory.buildFailResult(message);
         }
         int i = employerDao.addEmployer(id,name);
         if(i==0){
-            message = String.format("添加失败！");
+            message = String.format("添加失败！错误代码440");
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             return ResultFactory.buildFailResult(message);
         }else{
             return ResultFactory.buildSuccessResult(message,i);
@@ -100,27 +104,29 @@ public class EmployerController {
     @CrossOrigin
     @PostMapping("incomes/updateEmployer")
     @ResponseBody
+    @Transactional
     public Result updateEmployer(@RequestBody Employer requestEmployer) {
         int id =requestEmployer.getId();//工号
         String name =requestEmployer.getName();//姓名
         String message = String.format("修改成功！");
-        if (null == name || 0 == id) {
-            message = String.format("修改失败！");
+        if (null == name ||name.equals("")) {
+            message = String.format("员工姓名不能为空！");
             return ResultFactory.buildFailResult(message);
         }
         int i = employerDao.updateEmployer(id,name);
         if(i==0){
-            message = String.format("修改失败！");
+            message = String.format("修改失败！错误代码440");
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             return ResultFactory.buildFailResult(message);
-        }else{
-            return ResultFactory.buildSuccessResult(message,i);
         }
+        return ResultFactory.buildSuccessResult(message,i);
     }
 
     //按员工工号和姓名删除员工信息（假删除）
     @CrossOrigin
     @PostMapping("incomes/deleteEmployer")
     @ResponseBody
+    @Transactional
     public Result deleteEmployer(@RequestBody Employer requestEmployer) {
         int id =requestEmployer.getId();//工号
         String message = String.format("删除成功！");
@@ -130,10 +136,10 @@ public class EmployerController {
         }
         int i = employerDao.deleteEmployer(id);
         if(i==0){
-            message = String.format("删除失败！");
+            message = String.format("删除失败！错误代码440");
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             return ResultFactory.buildFailResult(message);
-        }else{
-            return ResultFactory.buildSuccessResult(message,i);
         }
+        return ResultFactory.buildSuccessResult(message,i);
     }
 }

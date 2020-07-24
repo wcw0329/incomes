@@ -44,9 +44,12 @@ public class TempoController {
             map.put("secondsum",tempo.getSecondsum());//工资合计
             map.put("tax", tempo.getTax());//代扣个税
             map.put("sumpayable", tempo.getSumpayable());//实发奖金
-            String sign = "---";
-            map.put("sign", sign);//签章
-            map.put("note", tempo.getNote());//备注
+            map.put("qianzhang","---");//签章
+            if(null==tempo.getNote()){
+                map.put("note","---");//备注
+            }else{
+                map.put("note",tempo.getNote());//备注
+            }
             list.add(map);
         }
         return list;

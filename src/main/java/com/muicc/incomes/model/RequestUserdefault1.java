@@ -7,7 +7,7 @@ import java.util.Objects;
 
 @Entity
 @Table(name = "userdefault1")
-public class RequestUserdefault1 implements Serializable {
+public class RequestUserdefault1  {
     private Integer id;
     private int eid;
     private String ename;

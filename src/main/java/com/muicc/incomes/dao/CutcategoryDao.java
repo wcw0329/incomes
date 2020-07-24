@@ -20,9 +20,6 @@ public interface CutcategoryDao extends JpaRepository<Cutcategory,Integer> {
     @Query(value = "select id from cutcategory where name =?1 ",nativeQuery = true)
     int getIdByName(String name);
 
-    @Query(value = "select id from cutcategory where name =?1 and status = 1",nativeQuery = true)
-    int getIdByNameAndShown(String name);
-
     @Query(value = "select name from cutcategory where id =?1 ",nativeQuery = true)
     String getNameById(int id);
 

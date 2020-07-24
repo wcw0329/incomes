@@ -6,23 +6,19 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
 
 public interface TaxDao extends JpaRepository<Tax,Integer> {
 
-    @Query(value = "select * from tax where id = ?1",nativeQuery = true)
-    Tax getTaxByid(int id);
+    @Transactional
+    @Modifying
+    @Query(value = "insert into tax(tax,eid,cdid) values (?1,?2,?3) ",nativeQuery = true)
+    int addTax(double tax,int eid,int cdid);
+
+    @Query(value = "select IFNULL(sum(tax),0) from tax where eid =?1 and cdid >= ?2 and cdid <= ?3 ",nativeQuery = true)
+    int getTaxByCdid(int eid,int cdid1,int cdid2);
 
     @Transactional
     @Modifying
-    @Query(value = "insert into tax(tax,trupdid) values (?1,?2) ",nativeQuery = true)
-    int addTax(double tax,int trupdid);
-
-    @Query(value = "select max(id) from tax where tax=?1 and trupdid=?2",nativeQuery = true)
-    Integer getTxid(double tax,int trupdid);
-
-    @Transactional
-    @Modifying
-    @Query(value = "delete from tax where id = ?1",nativeQuery = true)
-    int deleteTax(int txid);
+    @Query(value = "delete from tax where cdid = ?1",nativeQuery = true)
+    int deleteTax(int cdid);
 }

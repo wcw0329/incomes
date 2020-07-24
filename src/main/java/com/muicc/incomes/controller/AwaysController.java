@@ -41,6 +41,9 @@ public class AwaysController {
             map.put("num", i+1);//序号
             map.put("cutmoney",aways.getCutmoney());//旷工扣款金额
             Employer employerById = employerDao.getEmployerById(aways.getEid());
+            if(null==employerById){
+                continue;
+            }
             map.put("ename",employerById.getName());//员工姓名
             Createdate createdateByCdid = createdateDao.getCreatedateByCdid(aways.getCdid());
             map.put("time", createdateByCdid.getName());//扣款时间
