@@ -38,8 +38,13 @@ public interface CutDao extends JpaRepository<Cut,Integer> {
 
     @Transactional
     @Modifying
-    @Query(value = "update cut set status = ?1 where cdid = ?2 ",nativeQuery = true)
-    int updateCutStatus(int status,int cdid);
+    @Query(value = "update cut set status = 1 where cdid = ?1 and eid=?2",nativeQuery = true)
+    int updateCutStatusTo0(int cdid,int eid);
+
+    @Transactional
+    @Modifying
+    @Query(value = "update cut set status = 1 where cdid = ?1 ",nativeQuery = true)
+    int updateCutStatusTo1(int cdid);
 
     @Transactional
     @Modifying

@@ -37,8 +37,13 @@ public interface AwardDao extends JpaRepository<Award,Integer> {
 
     @Transactional
     @Modifying
-    @Query(value = "update award set status = ?1 where cdid = ?2 ",nativeQuery = true)
-    int updateAwardStatus(int status,int cdid);
+    @Query(value = "update award set status = 0 where cdid = ?1 and eid=?2",nativeQuery = true)
+    int updateAwardStatusTo0(int cdid,int eid);
+
+    @Transactional
+    @Modifying
+    @Query(value = "update award set status = 1 where cdid = ?1 ",nativeQuery = true)
+    int updateAwardStatusTo1(int cdid);
 
     @Transactional
     @Modifying

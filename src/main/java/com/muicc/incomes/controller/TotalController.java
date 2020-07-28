@@ -97,6 +97,21 @@ public class TotalController {
         }
         //获取所有员工信息
         List<Employer> allEmployer = employerDao.getAllEmployer();
+        List<Userdefault1> allUserdefault1 = userdefault1Dao.getAllUserdefault1();
+        if(allEmployer.size()!=allUserdefault1.size()){
+            message = String.format("新建失败！员工未添加基本信息！");
+            return ResultFactory.buildFailResult(message);
+        }
+        List<Insurancerate> allInsurancerate = insurancerateDao.getAllInsurancerate();
+        if(allEmployer.size()!=allInsurancerate.size()){
+            message = String.format("新建失败！员工未添加社保信息！");
+            return ResultFactory.buildFailResult(message);
+        }
+        List<Workday> workdayByCdid = workdayDao.getWorkdayByCdid(cdid);
+        if(allEmployer.size()!=workdayByCdid.size()){
+            message = String.format("新建失败！未找到该月的请假加班信息！");
+            return ResultFactory.buildFailResult(message);
+        }
         for (int i = 0; i < allEmployer.size(); i++) {
             Employer employer = allEmployer.get(i);
             //获取单个员工工号
@@ -108,16 +123,12 @@ public class TotalController {
             double insurancebase = 0;//社保基数
 
             Userdefault1 userdefault1ByEid = userdefault1Dao.getUserdefault1ByEid(empId);
-            if (null == userdefault1ByEid) {
-                message = String.format("新建失败！员工未添加基本信息！");
-                return ResultFactory.buildFailResult(message);
-            } else {
-                //获取该员工基本信息
-                //基本工资
-                regularpay = userdefault1ByEid.getRegularpay();
-                //社保基数
-                insurancebase = userdefault1ByEid.getInsurancebase();
-            }
+
+            //获取该员工基本信息
+            //基本工资
+            regularpay = userdefault1ByEid.getRegularpay();
+            //社保基数
+            insurancebase = userdefault1ByEid.getInsurancebase();
             /**
              * insurancerate社保率表
              */
@@ -125,16 +136,11 @@ public class TotalController {
             double fixedfee = 0;//固定社保费
             double cutmoney =0;//旷工扣款
             Insurancerate insurancerateByEid = insurancerateDao.getInsurancerateByEid(empId);
-            if (null == insurancerateByEid) {
-                message = String.format("新建失败！员工未添加社保信息！");
-                return ResultFactory.buildFailResult(message);
-            } else {
-                //获取该员工社保信息
-                //税率
-                insurancerate = insurancerateByEid.getInsurancerate();
-                //固定税率
-                fixedfee = insurancerateByEid.getFixedfee();
-            }
+            //获取该员工社保信息
+            //税率
+            insurancerate = insurancerateByEid.getInsurancerate();
+            //固定税率
+            fixedfee = insurancerateByEid.getFixedfee();
             /**
              * workday请假加班表
              */
@@ -149,78 +155,68 @@ public class TotalController {
             double absenteeism = 0;//旷工
             double work = 0;//加班奖金
             double work1 = 0;//请假扣款
-            double zongJia3 = 0;
             double attenceAwards = 0;//全勤奖
             Workday workdayByEidAndCdid = workdayDao.getWorkdayByEidAndCdid(empId, cdid);
-            if (null == workdayByEidAndCdid) {
-                message = String.format("新建失败！未找到请假加班信息！");
-                return ResultFactory.buildFailResult(message);
-            } else {
-                paidLeave = workdayByEidAndCdid.getPaidLeave();//带薪请假
-                absence = workdayByEidAndCdid.getAbsence();//无薪请假
-                overtimed = workdayByEidAndCdid.getOvertimed();//节假日加班
-                overtimen = workdayByEidAndCdid.getOvertimen();//普通加班
-                late = workdayByEidAndCdid.getLate();//迟到
-                lateTimes = workdayByEidAndCdid.getLateTimes();//迟到次数
-                leaveral = workdayByEidAndCdid.getLeaveral();//早退
-                leaveralTimes = workdayByEidAndCdid.getLeaveralTimes();//早退次数
-                absenteeism = workdayByEidAndCdid.getAbsenteeism();//旷工
-                //计算请假加班扣费
-                if (overtimen >= absence) {
-                    overtimen = overtimen - absence;
-                    //加班奖金
-                    work = overtimen * regularpay * 1.5 / 8 / 21.75 + overtimed * 2 * regularpay / 21.75 / 8;
-                    //请假扣款
-                    work1 = 0;
-                } else if (absence > overtimen && absence < (overtimen + overtimed)) {
-                    overtimed = overtimed + overtimen - absence;
-                    //加班奖金
-                    work = overtimed * 2 * regularpay / 21.75 / 8;
-                    //请假扣款
-                    work1 = 0;
-                } else if (absence >= (overtimen + overtimed)) {
-                    double absence1 = absence - (overtimen + overtimed);
-                    //加班奖金
-                    work = 0;
-                    //请假扣款
-                    work1 = (absence1 * regularpay / 21.75 / 8);
-                }
-                //总价=基本工资-社保+加班-请假
-                double zongJia1 = regularpay - (insurancebase * insurancerate + fixedfee) + work - work1;
-
-                /**
-                 * attendance考勤表
-                 */
-                List<Attendance> allAttendance = attendanceDao.getAllAttendance();
-                //考勤奖存在
-                if(allAttendance.size()>0){
-                    Attendance attendance = allAttendance.get(0);
-                    double atime = attendance.getTime();//迟到早退时间限制
-                    int atimes = attendance.getTimes();//迟到早退次数限制
-                    double rate = attendance.getRate();//全勤奖率
-                    double fixedAward = attendance.getFixedAward();//全勤奖固定金额
-
-                    if (paidLeave + absence + absenteeism == 0 && late + leaveral <= atime && lateTimes + leaveralTimes <= atimes) {
-                        attenceAwards = regularpay * rate + fixedAward;
-                    } else {
-                        attenceAwards = 0;
-                    }
-                }
-                //总价=基本工资-社保+加班-请假+全勤奖
-                double zongJia2 = zongJia1 + attenceAwards;
-                /**
-                 * aways旷工扣款表
-                 */
-                cutmoney = 0;
-                Aways AwaysbyEidAndCdid = awaysDao.getByEidAndCdid(empId, cdid);
-                if (AwaysbyEidAndCdid != null) {
-                    cutmoney = awaysDao.getAwaysByEidAndCdid(empId, cdid);
-                }
-                //总价=基本工资-社保+加班-请假+全勤奖-旷工扣款
-                zongJia3 = zongJia2 - cutmoney;
+            paidLeave = workdayByEidAndCdid.getPaidLeave();//带薪请假
+            absence = workdayByEidAndCdid.getAbsence();//无薪请假
+            overtimed = workdayByEidAndCdid.getOvertimed();//节假日加班
+            overtimen = workdayByEidAndCdid.getOvertimen();//普通加班
+            late = workdayByEidAndCdid.getLate();//迟到
+            lateTimes = workdayByEidAndCdid.getLateTimes();//迟到次数
+            leaveral = workdayByEidAndCdid.getLeaveral();//早退
+            leaveralTimes = workdayByEidAndCdid.getLeaveralTimes();//早退次数
+            absenteeism = workdayByEidAndCdid.getAbsenteeism();//旷工
+            //计算请假加班扣费
+            if (overtimen >= absence) {
+                overtimen = overtimen - absence;
+                //加班奖金
+                work = overtimen * regularpay * 1.5 / 8 / 21.75 + overtimed * 2 * regularpay / 21.75 / 8;
+                //请假扣款
+                work1 = 0;
+            } else if (absence > overtimen && absence < (overtimen + overtimed)) {
+                overtimed = overtimed + overtimen - absence;
+                //加班奖金
+                work = overtimed * 2 * regularpay / 21.75 / 8;
+                //请假扣款
+                work1 = 0;
+            } else if (absence >= (overtimen + overtimed)) {
+                double absence1 = absence - (overtimen + overtimed);
+                //加班奖金
+                work = 0;
+                //请假扣款
+                work1 = (absence1 * regularpay / 21.75 / 8);
             }
-
-
+            //总价=基本工资-社保+加班-请假
+            double zongJia1 = regularpay - (insurancebase * insurancerate + fixedfee) + work - work1;
+            /**
+             * attendance考勤表
+             */
+            List<Attendance> allAttendance = attendanceDao.getAllAttendance();
+            //考勤奖存在
+            if(allAttendance.size()>0){
+                Attendance attendance = allAttendance.get(0);
+                double atime = attendance.getTime();//迟到早退时间限制
+                int atimes = attendance.getTimes();//迟到早退次数限制
+                double rate = attendance.getRate();//全勤奖率
+                double fixedAward = attendance.getFixedAward();//全勤奖固定金额
+                if (paidLeave + absence + absenteeism == 0 && late + leaveral <= atime && lateTimes + leaveralTimes <= atimes) {
+                       attenceAwards = regularpay * rate + fixedAward;
+                } else {
+                    attenceAwards = 0;
+                }
+            }
+            //总价=基本工资-社保+加班-请假+全勤奖
+            double zongJia2 = zongJia1 + attenceAwards;
+            /**
+             * aways旷工扣款表
+             */
+            cutmoney = 0;
+            Aways AwaysbyEidAndCdid = awaysDao.getByEidAndCdid(empId, cdid);
+            if (AwaysbyEidAndCdid != null) {
+                cutmoney = awaysDao.getAwaysByEidAndCdid(empId, cdid);
+            }
+            //总价=基本工资-社保+加班-请假+全勤奖-旷工扣款
+            double zongJia3 = zongJia2 - cutmoney;
             /**
              * award奖金表
              */
@@ -418,71 +414,66 @@ public class TotalController {
                 TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
                 return ResultFactory.buildFailResult(message);
             }
-        }
 
-        /**
-         * 将请假加班管理status改为0
-         */
-        int i = workdayDao.updateWorkdayStatus(0, cdid);
-        if (i==0) {
-            message = String.format("添加失败！错误代码446");
-            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
-            return ResultFactory.buildFailResult(message);
+            /**
+             * 将请假加班管理status改为0
+             */
+            int q = workdayDao.updateWorkdayStatusTo0(cdid,empId);
+            if (q==0) {
+                message = String.format("添加失败！错误代码446");
+                TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+                return ResultFactory.buildFailResult(message);
+            }
+            /**
+             * 将旷工扣款status改为0
+             */
+            List<Aways> awaysByCdid = awaysDao.getAwaysByCdid(cdid);
+            if(awaysByCdid.size()!=0){
+                int j = awaysDao.updateAwaysStatusTo0(cdid,empId);
+                if (j==0) {
+                    message = String.format("添加失败！错误代码447");
+                    TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+                    return ResultFactory.buildFailResult(message);
+                }
+            }
+            /**
+             * 将奖金表status改为0
+             */
+            List<Award> awardByCdid = awardDao.getAwardByCdid(cdid);
+            if(awardByCdid.size()!=0){
+                int x =  awardDao.updateAwardStatusTo0(0, cdid);
+                if (x == 0) {
+                    message = String.format("删除失败！错误代码448");
+                    TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+                    return ResultFactory.buildFailResult(message);
+                }
+            }
+            /**
+             * 将扣款表status改为0
+             */
+            List<Cut> cutByCdid = cutDao.getCutByCdid(cdid);
+            if(cutByCdid.size()!=0){
+                int y  = cutDao.updateCutStatusTo0(cdid,empId);
+                if (y == 0) {
+                    message = String.format("添加失败！错误代码449");
+                    TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+                    return ResultFactory.buildFailResult(message);
+                }
+            }
+            /**
+             * 将补贴表status改为0
+             */
+            List<Allowance> allowanceByCdid = allowanceDao.getAllowanceByCdid(cdid);
+            if(allowanceByCdid.size()!=0){
+                int z = allowanceDao.updateAllowanceStatusTo0(cdid,empId);
+                if (z == 0) {
+                    message = String.format("添加失败！错误代码450");
+                    TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+                    return ResultFactory.buildFailResult(message);
+                }
+            }
         }
-
-        /**
-         * 将旷工扣款status改为0
-         */
-        int j =1;
-        List<Aways> awaysByCdid = awaysDao.getAwaysByCdid(cdid);
-        if(awaysByCdid.size()!=0){
-            j = awaysDao.updateAwaysStatus(0, cdid);
-        }
-        if (j==0) {
-            message = String.format("添加失败！错误代码447");
-            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
-            return ResultFactory.buildFailResult(message);
-        }
-        /**
-         * 将奖金表status改为0
-         */
-        int x = 1;
-        List<Award> awardByCdid = awardDao.getAwardByCdid(cdid);
-        if(awardByCdid.size()!=0){
-            x =  awardDao.updateAwardStatus(0, cdid);
-        }
-        if (x == 0) {
-            message = String.format("删除失败！错误代码448");
-            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
-            return ResultFactory.buildFailResult(message);
-        }
-        /**
-         * 将扣款表status改为0
-         */
-        int y =1;
-        List<Cut> cutByCdid = cutDao.getCutByCdid(cdid);
-        if(cutByCdid.size()!=0){
-            y  = cutDao.updateCutStatus(0, cdid);
-        }
-        if (y == 0) {
-            message = String.format("添加失败！错误代码449");
-            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
-            return ResultFactory.buildFailResult(message);
-        }
-        /**
-         * 将补贴表status改为0
-         */
-        int z =1;
-        List<Allowance> allowanceByCdid = allowanceDao.getAllowanceByCdid(cdid);
-        if(allowanceByCdid.size()!=0){
-            z = allowanceDao.updateAllowanceStatus(0, cdid);
-        }
-        if (z == 0) {
-            message = String.format("添加失败！错误代码450");
-            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
-            return ResultFactory.buildFailResult(message);
-        }
-            return ResultFactory.buildSuccessResult(message, null);
+        return ResultFactory.buildSuccessResult(message, null);
     }
 
 
@@ -539,7 +530,7 @@ public class TotalController {
             /**
              * 将请假加班管理status改回1
              */
-            int l = workdayDao.updateWorkdayStatus(1, cdid);
+            int l = workdayDao.updateWorkdayStatusTo1(cdid);
             if (l == 0) {
                 message = String.format("删除失败！错误代码444");
                 TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
@@ -548,54 +539,50 @@ public class TotalController {
             /**
              * 将旷工扣款status改回1
              */
-            int k =1;
             List<Aways> awaysByCdid = awaysDao.getAwaysByCdid(cdid);
             if(awaysByCdid.size()!=0){
-                k = awaysDao.updateAwaysStatus(1, cdid);
-            }
-            if (k == 0) {
-                message = String.format("删除失败！错误代码443");
-                TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
-                return ResultFactory.buildFailResult(message);
+                int k = awaysDao.updateAwaysStatusTo1(cdid);
+                if (k == 0) {
+                    message = String.format("删除失败！错误代码443");
+                    TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+                    return ResultFactory.buildFailResult(message);
+                }
             }
             /**
              * 将补贴表status改回1
              */
-            int n =1;
             List<Allowance> allowanceByCdid = allowanceDao.getAllowanceByCdid(cdid);
             if(allowanceByCdid.size()!=0){
-                n = allowanceDao.updateAllowanceStatus(1, cdid);
-            }
-            if (n == 0) {
-                message = String.format("删除失败！错误代码446");
-                TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
-                return ResultFactory.buildFailResult(message);
+                int n = allowanceDao.updateAllowanceStatusTo1(cdid);
+                if (n == 0) {
+                    message = String.format("删除失败！错误代码446");
+                    TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+                    return ResultFactory.buildFailResult(message);
+                }
             }
             /**
              * 将奖金表status改回1
              */
-            int o = 1;
             List<Award> awardByCdid = awardDao.getAwardByCdid(cdid);
             if(awardByCdid.size()!=0){
-                n =  awardDao.updateAwardStatus(1, cdid);
-            }
-            if (o == 0) {
-                message = String.format("删除失败！错误代码447");
-                TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
-                return ResultFactory.buildFailResult(message);
+                int o =  awardDao.updateAwardStatusTo1(cdid);
+                if (o == 0) {
+                    message = String.format("删除失败！错误代码447");
+                    TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+                    return ResultFactory.buildFailResult(message);
+                }
             }
             /**
              * 将扣款表status改回1
              */
-            int p =1;
             List<Cut> cutByCdid = cutDao.getCutByCdid(cdid);
             if(cutByCdid.size()!=0){
-                p  = cutDao.updateCutStatus(1, cdid);
-            }
-            if (p == 0) {
-                message = String.format("删除失败！错误代码448");
-                TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
-                return ResultFactory.buildFailResult(message);
+                int p  = cutDao.updateCutStatusTo1(cdid);
+                if (p == 0) {
+                    message = String.format("删除失败！错误代码448");
+                    TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+                    return ResultFactory.buildFailResult(message);
+                }
             }
 
             return ResultFactory.buildSuccessResult(message, null);

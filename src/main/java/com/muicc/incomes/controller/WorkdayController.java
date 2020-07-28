@@ -266,11 +266,14 @@ public class WorkdayController {
             return ResultFactory.buildFailResult(message);
         }
         Workday workdayById = workdayDao.getWorkdayById(id);
-        int i = awaysDao.deleteAways(workdayById.getEid(), workdayById.getCdid());
-        if(i==0){
-            message = String.format("删除失败！错误代码440");
-            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
-            return ResultFactory.buildFailResult(message);
+        Aways byEidAndCdid = awaysDao.getByEidAndCdid(workdayById.getEid(), workdayById.getCdid());
+        if(byEidAndCdid!=null){
+            int i = awaysDao.deleteAways(workdayById.getEid(), workdayById.getCdid());
+            if(i==0){
+                message = String.format("删除失败！错误代码440");
+                TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+                return ResultFactory.buildFailResult(message);
+            }
         }
         int j = workdayDao.deleteWorkday(id);
         if(j==0){
@@ -278,7 +281,7 @@ public class WorkdayController {
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             return ResultFactory.buildFailResult(message);
         }
-        return ResultFactory.buildSuccessResult(message,i);
+        return ResultFactory.buildSuccessResult(message,j);
     }
 
 }

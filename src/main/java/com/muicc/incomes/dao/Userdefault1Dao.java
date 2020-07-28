@@ -13,14 +13,11 @@ import java.util.List;
 public interface Userdefault1Dao extends JpaRepository<Userdefault1,Integer> {
 
 
-    @Query(value = "select * from userdefault1 where id = ?1 and status = 1",nativeQuery = true)
-    Userdefault1 getUserdefault1ByUdid(int udid);
+    @Query(value = "select * from userdefault1 where status = 1",nativeQuery = true)
+    List<Userdefault1> getAllUserdefault1();
 
     @Query(value = "select * from userdefault1 where eid = ?1 and status = 1",nativeQuery = true)
     Userdefault1 getUserdefault1ByEid(int eid);
-
-    @Query(value = "select max(id) from userdefault1 where eid = ?1 and status = 1",nativeQuery = true)
-    Integer getLastId(int eid);
 
     @Transactional
     @Modifying

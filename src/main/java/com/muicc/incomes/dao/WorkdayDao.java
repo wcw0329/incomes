@@ -38,8 +38,13 @@ public interface WorkdayDao extends JpaRepository<Workday,Integer> {
 
     @Transactional
     @Modifying
-    @Query(value = "update workday set status = ?1 where cdid = ?2 ",nativeQuery = true)
-    int updateWorkdayStatus(int status,int cdid);
+    @Query(value = "update workday set status = 0 where cdid = ?1 and eid=?2",nativeQuery = true)
+    int updateWorkdayStatusTo0(int cdid,int eid);
+
+    @Transactional
+    @Modifying
+    @Query(value = "update workday set status = 1 where cdid = ?1",nativeQuery = true)
+    int updateWorkdayStatusTo1(int cdid);
 
     @Transactional
     @Modifying

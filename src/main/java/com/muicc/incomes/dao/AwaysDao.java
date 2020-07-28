@@ -34,6 +34,11 @@ public interface AwaysDao extends JpaRepository<Aways,Integer> {
 
     @Transactional
     @Modifying
-    @Query(value = "update aways set status = ?1 where cdid = ?2 ",nativeQuery = true)
-    int updateAwaysStatus(int status,int cdid);
+    @Query(value = "update aways set status = 0 where cdid = ?1 and eid=?2",nativeQuery = true)
+    int updateAwaysStatusTo0(int cdid,int eid);
+
+    @Transactional
+    @Modifying
+    @Query(value = "update aways set status = 1 where cdid = ?1",nativeQuery = true)
+    int updateAwaysStatusTo1(int cdid);
 }
